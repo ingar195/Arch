@@ -38,9 +38,6 @@ polybar
 networkmanager
 nm-connection-editor
 network-manager-applet 
- 
-
-work
 openvpn
 slack-desktop
 
