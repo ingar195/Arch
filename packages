@@ -1,3 +1,6 @@
+bc
+numlockx
+freecad
 gparted
 peak-linux-headers
 unzip
@@ -75,3 +78,8 @@ sudo chmod +x /usr/bin/cansetup
 
 git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
+
+
+
+swap:
+https://forum.manjaro.org/t/howto-enable-and-configure-hibernation-with-btrfs/51253
