@@ -2,16 +2,16 @@
 sudo pacman --noconfirm -Sy
 
 # Go to home
-cd 
+cd
 sudo pacman -S --noconfirm --needed git
 
 if [ "$(which paru)" == "/usr/bin/paru" ]; then
-  echo skipping
+    echo skipping
 else
-  # Install Paru helper
-  git clone https://aur.archlinux.org/paru.git
-  cd paru && makepkg -si && cd ..
-  sudo rm -R paru
+    # Install Paru helper
+    git clone https://aur.archlinux.org/paru.git
+    cd paru && makepkg -si && cd ..
+    sudo rm -R paru
 fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
@@ -61,7 +61,7 @@ sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-n
 if [ ! $(git config user.email)  ]; then
     read -p "Type your git email:  " git_email
     git config --global user.email $git_email
-
+    
 fi
 if [ ! $(git config user.name)  ]; then
     read -p "Type your git Full name:  " git_name
@@ -82,25 +82,29 @@ sudo systemctl start libvirtd.service
 
 
 if [ $USER = fw ]; then
-  git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
-elif [ $USER = user ]; then
-  git_url="https://github.com/ingar195/.dotfiles.git"
-  # Power Save
-  sudo sed -i 's/#HandleLidSwitch=suspend/HandleLidSwitch=suspend/g' /etc/systemd/logind.conf 
-  sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf 
-  sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf 
-  sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf 
+    git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
+    elif [ $USER = user ]; then
+    git_url="https://github.com/ingar195/.dotfiles.git"
+    
+    # Power Save
+    sudo sed -i 's/#HandleLidSwitch=suspend/HandleLidSwitch=suspend/g' /etc/systemd/logind.conf
+    sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf
+    sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
+    sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
+    
+    sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
+    sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 else
-  read -p "enter the https URL for you git bare repo : " git_url
+    read -p "enter the https URL for you git bare repo : " git_url
 fi
 
 if [[ ! -f .dotfiles/config ]]
 then
     rm .config/i3/config
-    mkdir .config/polybar   
+    mkdir .config/polybar
 fi
 
-# Aliases 
+# Aliases
 al_dot="alias dotfiles='/usr/bin/git --git-dir=/home/user/.dotfiles/ --work-tree=/home/user'"
 al_rs="alias rs=rsync --info=progress2 -au"
 
@@ -113,7 +117,7 @@ do
         echo $value
         echo $value >> .zshrc
         
-
+        
     fi
 done
 
@@ -121,16 +125,16 @@ alias dotfiles='/usr/bin/git --git-dir=/home/user/.dotfiles/ --work-tree=/home/u
 
 if [[ ! -f .gitignore ]]
 then
-    echo ".dotfiles" > .gitignore 
+    echo ".dotfiles" > .gitignore
 fi
-git clone --bare $git_url  $HOME/.dotfiles 
+git clone --bare $git_url  $HOME/.dotfiles
 dotfiles checkout -f
 
-mkdir ~/Downloads 
+mkdir ~/Downloads
 mkdir ~/Desktop
 
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
-  chsh -s /bin/zsh
+    chsh -s /bin/zsh
 fi
 
 
