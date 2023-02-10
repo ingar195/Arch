@@ -1,7 +1,7 @@
 # Update pacman database
 sudo pacman --noconfirm -Sy
 cd 
-sudo pacman -S --noconfirm git
+sudo pacman -S --noconfirm --needed git
 
 if [ "$(which paru)" == "/usr/bin/paru" ]; then
   echo skipping
@@ -14,7 +14,7 @@ fi
 
 
 # install Packages
-paru -S --noconfirm arandr acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git powerkit tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
+paru -S --noconfirm --needed arandr acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git powerkit tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
 
 
 if [[ ! -f .ssh/id_rsa ]]
@@ -31,8 +31,10 @@ sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" >
 if systemctl is-active --quiet NetworkManager ; then
     echo Skipping NetworkManager service
 else
-    fisystemctl enable NetworkManager.service --now
+    systemctl enable NetworkManager.service --now
 fi
+
+
 if systemctl is-active --quiet teamviewerd  ; then
     echo Skipping teamviewerd service
 else
