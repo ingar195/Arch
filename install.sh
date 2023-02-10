@@ -116,4 +116,7 @@ sudo powertop --auto-tune
 
 # Cleanup unused
 paru -Qdtq | paru --noconfirm  -Rs -
+
+echo ----------------------
 echo "Please reboot you PC"
+echo ----------------------
