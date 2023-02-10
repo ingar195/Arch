@@ -14,7 +14,7 @@ fi
 
 
 # install Packages
-paru -S --noconfirm --needed arandr flameshot acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git powerkit tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
+paru -S --noconfirm --needed arandr onedrive flameshot acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git powerkit tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
 
 
 if [[ ! -f .ssh/id_rsa ]]
