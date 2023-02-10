@@ -72,7 +72,6 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
 
-
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
