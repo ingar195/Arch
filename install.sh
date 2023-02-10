@@ -12,9 +12,11 @@ else
   sudo rm -R paru
 fi
 
-
+sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
+sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
+sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 # install Packages
-paru -S --noconfirm --needed arandr onedrive flameshot acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git powerkit tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
+paru -S --noconfirm --needed arandr meld onedrive flameshot acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git powerkit tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
 
 
 if [[ ! -f .ssh/id_rsa ]]
@@ -63,13 +65,6 @@ if [ ! $(git config user.name)  ]; then
     git config --global user.name $git_name
 fi
 
-
-
-
-
-sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
-sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
-sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
