@@ -1,5 +1,7 @@
 # Update pacman database
 sudo pacman --noconfirm -Sy
+
+# Go to home
 cd 
 sudo pacman -S --noconfirm --needed git
 
