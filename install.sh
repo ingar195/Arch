@@ -68,8 +68,10 @@ if [ ! $(git config user.name)  ]; then
     git config --global user.name $git_name
 fi
 
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+if [[ ! -f .zshrc ]]
+then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
 
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
@@ -126,12 +128,16 @@ dotfiles checkout -f
 
 mkdir ~/Downloads 
 mkdir ~/Desktop
-chsh -s /bin/zsh
+
+if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
+  chsh -s /bin/zsh
+fi
+
 
 sudo powertop --auto-tune
 
 # Cleanup unused
-paru -Qdtq | paru --noconfirm  -Rs -
+paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 echo ----------------------
 echo "Please reboot you PC"
