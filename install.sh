@@ -105,7 +105,7 @@ then
 fi
 
 # Aliases
-al_dot="alias dotfiles='/usr/bin/git --git-dir=/home/user/.dotfiles/ --work-tree=/home/user'"
+al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'"
 al_rs="alias rs=rsync --info=progress2 -au"
 
 for value in "$al_dot" "$al_rs"
@@ -121,7 +121,7 @@ do
     fi
 done
 
-alias dotfiles='/usr/bin/git --git-dir=/home/user/.dotfiles/ --work-tree=/home/user'
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'
 
 if [[ ! -f .gitignore ]]
 then
