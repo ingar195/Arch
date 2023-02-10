@@ -15,6 +15,7 @@ fi
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
 sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
+
 # install Packages
 paru -S --noconfirm --needed arandr meld dnsmasq onedrive flameshot acpid bc numlockx unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin
 
@@ -81,6 +82,7 @@ if [ $USER = fw ]; then
   git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
 elif [ $USER = user ]; then
   git_url="https://github.com/ingar195/.dotfiles.git"
+  # Power Save
   sudo sed -i 's/#HandleLidSwitch=suspend/HandleLidSwitch=suspend/g' /etc/systemd/logind.conf 
   sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf 
   sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf 
@@ -95,20 +97,27 @@ then
     mkdir .config/polybar   
 fi
 
+# Aliases 
+al_dot="alias dotfiles='/usr/bin/git --git-dir=/home/user/.dotfiles/ --work-tree=/home/user'"
+al_rs="alias rs=rsync --info=progress2 -au"
 
-al="alias dotfiles='/usr/bin/git --git-dir=/home/user/.dotfiles/ --work-tree=/home/user'"
+for value in "$al_dot" "$al_rs"
+do
+    if grep -Fxq "$value" .zshrc
+    then
+        echo Skipping
+    else
+        echo $value
+        echo $value >> .zshrc
+        alias $value
 
-if grep -Fxq "$al" .zshrc
+    fi
+done
+
+if [[ ! -f .gitignore ]]
 then
-    echo Skipping
-else
-    echo "alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'" >> ~/.zshrc
-
+    echo ".dotfiles" > .gitignore 
 fi
-
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME' 
-
-echo ".dotfiles" > .gitignore 
 git clone --bare $git_url  $HOME/.dotfiles 
 dotfiles checkout -f
 
