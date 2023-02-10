@@ -69,6 +69,12 @@ fi
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
+#sudo nano /etc/systemd/logind.conf 
+#sudo sed -i 's/#Color/Color/g' /etc/systemd/logind.conf 
+
+sudo usermod -G libvirt -a $USER
+sudo systemctl enable libvirtd.service
+sudo systemctl start libvirtd.service
 
 
 if [ $USER = fw ]; then
