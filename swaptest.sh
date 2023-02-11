@@ -1,5 +1,5 @@
 # Check if swap is configured
-if ! grep -Fq "zram0" /proc/swaps
+if ! grep -Fq "/proc/swapfile" /proc/swaps
 then
   # The swap and Hibernation part goes all credit to 
   # https://forum.manjaro.org/t/howto-enable-and-configure-hibernation-with-btrfs/51253
