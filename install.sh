@@ -77,14 +77,22 @@ fi
 
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
-# Service does not exixt 
+# VirtManager
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
 
+# Network dows not work, run this to  make it work 
+# sudo virsh net-start default
 
+# This is not tested, wil hopefully fix virt networks
+sudo virsh net-autostart default
+
+
+# user defaults
 if [ $USER = fw ]; then
     git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
+
     elif [ $USER = user ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
     
@@ -94,8 +102,12 @@ if [ $USER = fw ]; then
     sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
     sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
     
+    # Dunst settings 
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
+
+    elif [ $USER = screen ]; then
+    # Autostart script for web kiosk
 else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
@@ -123,23 +135,28 @@ do
     fi
 done
 
+# Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'
 
+# Create gitingore
 if [[ ! -f .gitignore ]]
 then
     echo ".dotfiles" > .gitignore
 fi
+
 git clone --bare $git_url  $HOME/.dotfiles
 dotfiles checkout -f
 
-mkdir ~/Downloads
-mkdir ~/Desktop
+
+# Create folders for filemanager
+mkdir ~/Downloads &> /dev/null
+mkdir ~/Desktop &> /dev/null
 
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     chsh -s /bin/zsh
 fi
 
-
+# Power settings
 sudo powertop --auto-tune
 
 # Cleanup unused
