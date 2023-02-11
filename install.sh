@@ -2,8 +2,8 @@
 sudo pacman --noconfirm -Sy
 
 # Go to home
-cd
-sudo pacman -S --noconfirm --needed git
+cd $HOME
+sudo pacman -S --noconfirm --needed base-devel git
 
 if [ "$(which paru)" == "/usr/bin/paru" ]; then
     echo skipping
@@ -75,7 +75,7 @@ fi
 
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
-
+# Service does not exixt 
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
