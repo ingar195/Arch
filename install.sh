@@ -5,15 +5,17 @@ sudo pacman --noconfirm -Sy
 cd $HOME
 sudo pacman -S --noconfirm --needed base-devel git
 
-if [ "$(which paru)" == "/usr/bin/paru" ]; then
-    echo skipping
-else
-    # Install Paru helper
-    git clone https://aur.archlinux.org/paru.git
-    cd paru && makepkg -si && cd ..
-    sudo rm -R paru
-fi
 
+# TODO: Add error handing of install 
+# Install Paru helper
+git clone https://aur.archlinux.org/paru.git
+cd paru && makepkg -si && cd ..
+sudo rm -R paru
+# if [ "$(which paru)" == "/usr/bin/paru" ]; then
+# fi
+git clone https://aur.archlinux.org/paru.git
+cd paru && makepkg -si && cd ..
+sudo rm -R paru
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
 sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
