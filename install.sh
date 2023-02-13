@@ -142,10 +142,13 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'
 if [[ ! -f .gitignore ]]
 then
     echo ".dotfiles" > .gitignore
+    git clone --bare $git_url $HOME/.dotfiles
+    dotfiles checkout -f
+else
+    dotfiles pull
 fi
 
-git clone --bare $git_url  $HOME/.dotfiles
-dotfiles checkout -f
+
 
 
 # Create folders for filemanager
