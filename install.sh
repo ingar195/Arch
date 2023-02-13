@@ -153,6 +153,7 @@ fi
 mkdir ~/Downloads &> /dev/null
 mkdir ~/Desktop &> /dev/null
 
+# not working
 # if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
 #     bash -c "chsh -s /bin/zsh"
 # fi
