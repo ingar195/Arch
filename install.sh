@@ -8,11 +8,11 @@ sudo pacman -S --noconfirm --needed base-devel git rust
 
 # TODO: Add error handing of install 
 # Install Paru helper
-git clone https://aur.archlinux.org/paru.git
-cd paru && makepkg -si && cd ..
-sudo rm -R paru
-# if [ "$(which paru)" == "/usr/bin/paru" ]; then
-# fi
+if [ "$(which paru)" == "/usr/bin/paru" ]; then
+    git clone https://aur.archlinux.org/paru.git
+    cd paru && makepkg -si && cd ..
+    sudo rm -R paru
+fi
 git clone https://aur.archlinux.org/paru.git
 cd paru && makepkg -si && cd ..
 sudo rm -R paru
