@@ -76,15 +76,10 @@ fi
 
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
-# VirtManager
+# Virt Manager
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
-
-# Network dows not work, run this to  make it work 
-# sudo virsh net-start default
-
-# This is not tested, wil hopefully fix virt networks
 sudo virsh net-autostart default
 
 # user defaults
