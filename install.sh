@@ -106,6 +106,9 @@ if [ $USER = fw ]; then
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 
+    # Grub speedup
+    sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+
     elif [ $USER = screen ]; then
     # Autostart script for web kiosk
 else
