@@ -5,7 +5,6 @@ sudo pacman --noconfirm -Sy
 cd $HOME
 sudo pacman -S --noconfirm --needed base-devel git rust
 
-
 # TODO: Add error handing of install 
 # Install Paru helper
 if [ "$(which paru)" == "/usr/bin/paru" ]; then
@@ -23,31 +22,31 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 # Install Packages
 paru -S --noconfirm --needed arandr meld dnsmasq onedrive flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols-1000-em libreoffice-fresh
 
-
+# Generate ssh key
 if [[ ! -f .ssh/id_rsa ]]
 then
     ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
 fi
 
+# Set theme
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
+# Set Backlight permissions and monotor rules
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee -a /etc/udev/rules.d/backlight-permissions.rules
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules'
 
-
+# Enable services
 if systemctl is-active --quiet NetworkManager ; then
     echo Skipping NetworkManager service
 else
     systemctl enable NetworkManager.service --now
 fi
 
-
 if systemctl is-active --quiet teamviewerd  ; then
     echo Skipping teamviewerd service
 else
     systemctl enable teamviewerd.service --now
 fi
-
 
 sudo sh -c 'echo "sudo ip link set can0 type can bitrate 125000" > /usr/bin/cansetup'
 sudo sh -c 'echo "sudo ip link set up can0" >> /usr/bin/cansetup'
@@ -87,7 +86,6 @@ sudo systemctl start libvirtd.service
 
 # This is not tested, wil hopefully fix virt networks
 sudo virsh net-autostart default
-
 
 # user defaults
 if [ $USER = fw ]; then
@@ -135,8 +133,6 @@ do
     else
         echo $value
         echo $value >> .zshrc
-        
-        
     fi
 done
 
@@ -153,15 +149,12 @@ else
     dotfiles pull
 fi
 
-
-
-
 # Create folders for filemanager
 mkdir ~/Downloads &> /dev/null
 mkdir ~/Desktop &> /dev/null
 
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
-    chsh -s /bin/zsh
+    bash -c "chsh -s /bin/zsh"
 fi
 
 # Power settings
