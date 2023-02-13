@@ -3,7 +3,7 @@ sudo pacman --noconfirm -Sy
 
 # Go to home
 cd $HOME
-sudo pacman -S --noconfirm --needed base-devel git
+sudo pacman -S --noconfirm --needed base-devel git rust
 
 
 # TODO: Add error handing of install 
