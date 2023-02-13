@@ -21,7 +21,7 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-paru -S --noconfirm --needed arandr meld dnsmasq onedrive flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin tf-nerd-fonts-symbols-1000-em libreoffice-fresh
+paru -S --noconfirm --needed arandr meld dnsmasq onedrive flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock zsh man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols-1000-em libreoffice-fresh
 
 
 if [[ ! -f .ssh/id_rsa ]]
@@ -93,7 +93,7 @@ sudo virsh net-autostart default
 if [ $USER = fw ]; then
     git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
 
-    elif [ $USER = user ]; then
+elif [ $USER = user ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
     
     # Power Save
@@ -109,8 +109,9 @@ if [ $USER = fw ]; then
     # Grub speedup
     sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
 
-    elif [ $USER = screen ]; then
+elif [ $USER = screen ]; then
     # Autostart script for web kiosk
+    echo Screen 
 else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
