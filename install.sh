@@ -160,7 +160,8 @@ chsh -s /bin/zsh
 # Power settings
 sudo powertop --auto-tune
 
-# Cleanup unused
+# Install updates and cleanup unused 
+paru
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 echo ----------------------
