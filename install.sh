@@ -42,7 +42,7 @@ if ! systemctl is-active --quiet teamviewerd  ; then
 fi
 
 # Check if swap is configured
-if ! grep -Fq "/proc/swapfile" /proc/swaps
+if ! grep -q  "/swap/swapfile" /proc/swaps
 then
   # The swap and Hibernation part goes all credit to 
   # https://forum.manjaro.org/t/howto-enable-and-configure-hibernation-with-btrfs/51253
