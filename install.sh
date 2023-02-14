@@ -2,7 +2,6 @@
 sudo pacman --noconfirm -Sy
 
 # Go to home
-cd $HOME
 sudo pacman -S --noconfirm --needed base-devel git rust
 
 # TODO: Add error handing of install 
@@ -23,7 +22,7 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 paru -S --noconfirm --needed zsh arandr meld dnsmasq onedrive flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols-1000-em libreoffice-fresh
 
 # Generate ssh key
-if [[ ! -f .ssh/id_rsa ]]
+if [[ ! -f $HOME/.ssh/id_rsa ]]
 then
     ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
 fi
@@ -65,7 +64,7 @@ if [ ! $(git config user.name)  ]; then
     git config --global user.name $git_name
 fi
 
-if [[ ! -f .zshrc ]]
+if [[ ! -f $HOME/.zshrc ]]
 then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
