@@ -36,15 +36,11 @@ echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/bright
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules'
 
 # Enable services
-if systemctl is-active --quiet NetworkManager ; then
-    echo Skipping NetworkManager service
-else
+if ! systemctl is-active --quiet NetworkManager ; then
     systemctl enable NetworkManager.service --now
 fi
 
-if systemctl is-active --quiet teamviewerd  ; then
-    echo Skipping teamviewerd service
-else
+if ! systemctl is-active --quiet teamviewerd  ; then
     systemctl enable teamviewerd.service --now
 fi
 
