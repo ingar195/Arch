@@ -152,10 +152,9 @@ mkdir ~/Downloads &> /dev/null
 mkdir ~/Desktop &> /dev/null
 
 # not working
-# if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
-#     bash -c "chsh -s /bin/zsh"
-# fi
-chsh -s /bin/zsh
+if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
+    chsh -s /bin/zsh
+fi
 
 # Power settings
 sudo powertop --auto-tune
