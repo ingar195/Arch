@@ -149,8 +149,9 @@ fi
 al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'"
 al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
 al_rs="alias rs=rsync --info=progress2 -au"
+al_can="alias cansetup=sudo ip link set can0 type can bitrate 125000 && sudo ip link set up can0"
 
-for value in "$al_dot" "$al_rs" "$al_dotp"
+for value in "$al_dot" "$al_rs" "$al_dotp" "$al_can"
 do
     if ! grep -Fxq "$value" .zshrc
     then
