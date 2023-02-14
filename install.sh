@@ -127,8 +127,6 @@ for value in "$al_dot" "$al_rs" "$al_dotp"
 do
     if ! grep -Fxq "$value" .zshrc
     then
-        echo Skipping
-    else
         echo $value
         echo $value >> .zshrc
     fi
