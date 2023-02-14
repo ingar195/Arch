@@ -97,8 +97,13 @@ elif [ $USER = user ]; then
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 
     # Grub speedup
-    sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
+    grub_timeout="GRUB_TIMEOUT=0"
+    if ! grep -Fxq $grub_timeout /etc/default/grub
+    then
+        sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+    fi
+
 
 elif [ $USER = screen ]; then
     # Autostart script for web kiosk
