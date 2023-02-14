@@ -120,11 +120,12 @@ fi
 
 # Aliases
 al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'"
+al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
 al_rs="alias rs=rsync --info=progress2 -au"
 
-for value in "$al_dot" "$al_rs"
+for value in "$al_dot" "$al_rs" "$al_dotp"
 do
-    if grep -Fxq "$value" .zshrc
+    if ! grep -Fxq "$value" .zshrc
     then
         echo Skipping
     else
