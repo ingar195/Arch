@@ -90,6 +90,7 @@ elif [ $USER = user ]; then
     sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf
     sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
     sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
+    paru -S --noconfirm --needed laptop-mode-tools
     
     # Dunst settings 
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
