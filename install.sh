@@ -129,6 +129,9 @@ elif [ $USER = user ]; then
     then
         sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
         sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+    # Directory
+    mkdir -p $HOME/workspace &> /dev/null
     fi
 
 
@@ -150,8 +153,9 @@ al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/hom
 al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
 al_rs="alias rs='rsync --info=progress2 -au'"
 al_can="alias cansetup='sudo ip link set can0 type can bitrate 125000 && sudo ip link set up can0'"
+al_vpn="alias vpn='sudo openvpn --config /home/user/.config/vpn/vpn.ovpn'"
 
-for value in "$al_dot" "$al_rs" "$al_dotp" "$al_can"
+for value in "$al_dot" "$al_rs" "$al_dotp" "$al_can" "$al_vpn"
 do
     if ! grep -Fxq "$value" $HOME/.zshrc
     then
@@ -174,8 +178,9 @@ else
 fi
 
 # Create folders for filemanager
-mkdir ~/Downloads &> /dev/null
-mkdir ~/Desktop &> /dev/null
+mkdir -p $HOME/Downloads &> /dev/null
+mkdir -p $HOME/Desktop &> /dev/null
+mkdir -P $HOME/.config/vpn &> /dev/null
 
 # not working
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
