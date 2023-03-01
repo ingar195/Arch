@@ -154,8 +154,10 @@ al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
 al_rs="alias rs='rsync --info=progress2 -au'"
 al_can="alias cansetup='sudo ip link set can0 type can bitrate 125000 && sudo ip link set up can0'"
 al_vpn="alias vpn='sudo openvpn --config /home/user/.config/vpn/vpn.ovpn'"
+al_lll="alias lll='tree -fiql --dirsfirst --noreport'"
 
-for value in "$al_dot" "$al_rs" "$al_dotp" "$al_can" "$al_vpn"
+
+for value in "$al_dot" "$al_rs" "$al_dotp" "$al_can" "$al_vpn" " $al_lll"
 do
     if ! grep -Fxq "$value" $HOME/.zshrc
     then
