@@ -17,7 +17,7 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-paru -S --noconfirm --needed zsh arandr remmina meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols-1000-em libreoffice-fresh gnome-keyring
+paru -S --noconfirm --needed zsh arandr remmina remmina-plugin-ultravnc meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols-1000-em libreoffice-fresh gnome-keyring
 
 # Generate ssh key
 if [[ ! -f $HOME/.ssh/id_rsa ]]
