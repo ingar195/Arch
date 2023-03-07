@@ -6,7 +6,7 @@ sudo pacman -S --noconfirm --needed base-devel git rust
 
 # TODO: Add error handing of install 
 # Install Paru helper
-#if [ $(which paru) != "/usr/bin/paru" ]; then
+#if ! [ -f $(which paru) ]; then
 git clone https://aur.archlinux.org/paru.git
 cd paru && makepkg -si && cd ..
 sudo rm -R paru
@@ -194,7 +194,7 @@ fi
 sudo powertop --auto-tune
 
 # Install updates and cleanup unused 
-paru
+paru --noconfirm
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 echo ----------------------
