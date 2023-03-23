@@ -26,6 +26,8 @@ then
     ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
 fi
 
+sudo timedatectl set-timezone Europe/Oslo
+
 # Set theme
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
