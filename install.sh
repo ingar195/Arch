@@ -156,11 +156,11 @@ then
 fi
 
 # Aliases
-al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'"
+al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'"
 al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
 al_rs="alias rs='rsync --info=progress2 -au'"
 al_can="alias cansetup='sudo ip link set can0 type can bitrate 125000 && sudo ip link set up can0'"
-al_vpn="alias vpn='sudo openvpn --config /home/user/.config/vpn/vpn.ovpn'"
+al_vpn="alias vpn='sudo openvpn --config /home/$USER/.config/vpn/vpn.ovpn'"
 al_lll="alias lll='tree -fiql --dirsfirst --noreport'"
 al_py="alias py='python3'"
 
@@ -175,10 +175,10 @@ do
 done
 
 # Tmp alias for installation only 
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
 
 # Create gitingore
-if [[ ! -f .gitignore ]]
+if [[ ! -f $HOME/.gitignore ]]
 then
     echo ".dotfiles" > .gitignore
     git clone --bare $git_url $HOME/.dotfiles
