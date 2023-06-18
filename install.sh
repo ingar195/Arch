@@ -111,7 +111,7 @@ sudo virsh net-autostart default
 
 # user defaults
 if [ $USER = fw ]; then
-    git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
+    git_url="https://github.com/frodus/dotfiles.git"
 
 elif [ $USER = user ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
