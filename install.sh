@@ -180,7 +180,11 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
 # Create gitingore
 if [[ ! -f $HOME/.gitignore ]]
 then
-    echo ".dotfiles" > .gitignore
+    echo ".dotfiles" > $HOME/.gitignore
+fi
+if [[ ! -d $HOME/.dotfiles/ ]]
+then
+    echo "Did not find .dotfiles, so will check them out again"
     git clone --bare $git_url $HOME/.dotfiles
     dotfiles checkout -f
 else
