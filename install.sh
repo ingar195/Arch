@@ -116,6 +116,9 @@ if [ $USER = fw ]; then
 # Add Teamviewer config to make it start
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo '[Service],Environment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
+
+    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server neovim rsync microsoft-edge-stable-bin qelectrotech libva-intel-driver dmenu prusa-slicer xidlehook
+
 elif [ $USER = user ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
     
