@@ -6,18 +6,33 @@ sudo pacman -S --noconfirm --needed base-devel git rust
 
 # TODO: Add error handing of install 
 # Install Paru helper
-#if ! [ -f $(which paru) ]; then
+if ! [ -f $(which paru) ]; then
 git clone https://aur.archlinux.org/paru.git
 cd paru && makepkg -si && cd ..
 sudo rm -R paru
-#fi
+fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
 sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-paru -S --noconfirm --needed zsh arandr docker sshpass remmina ansible qbittorrent gnu-netcat qemu-full networkmanager-l2tp networkmanager-strongswan remmina-plugin-ultravnc screen meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols-1000-em libreoffice-fresh gnome-keyring
+paru -S --noconfirm --needed zsh arandr docker sshpass remmina ansible qbittorrent gnu-netcat qemu-full networkmanager-l2tp networkmanager-strongswan remmina-plugin-ultravnc screen meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify-launcher unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols libreoffice-fresh gnome-keyring
+
+code --install-extension alexcvzz.vscode-sqlite
+code --install-extension atlassian.atlascode 
+code --install-extension danielroedl.meld-diff eamodio.gitlens 
+code --install-extension formulahendry.auto-rename-tag 
+code --install-extension idleberg.haskell-nsis 
+code --install-extension idleberg.nsis 
+code --install-extension mhutchie.git-graph 
+code --install-extension ms-azuretools.vscode-docker 
+code --install-extension ms-python.python  
+code --install-extension ms-vscode-remote.remote-containers 
+code --install-extension ms-vscode-remote.remote-ssh 
+code --install-extension redhat.vscode-xml 
+code --install-extension redhat.vscode-yaml 
+code --install-extension tonybaloney.vscode-pets
 
 sudo gpasswd -a $USER uucp
 
@@ -111,11 +126,18 @@ sudo usermod -aG docker $USER
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
-sudo virsh net-autostart default
+## This command does not work, and we do not know the reason or a workaround yet...
+#sudo virsh net-autostart default
 
 # user defaults
 if [ $USER = fw ]; then
-    git_url="https://frodus@bitbucket.org/frodus/dotfiles.git"
+    git_url="https://github.com/frodus/dotfiles.git"
+
+# Add Teamviewer config to make it start
+    sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
+    echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
+
+    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server neovim rsync microsoft-edge-stable-bin qelectrotech libva-intel-driver dmenu prusa-slicer xidlehook
 
 elif [ $USER = user ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
@@ -157,11 +179,11 @@ then
 fi
 
 # Aliases
-al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'"
+al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'"
 al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
 al_rs="alias rs='rsync --info=progress2 -au'"
 al_can="alias cansetup='sudo ip link set can0 type can bitrate 125000 && sudo ip link set up can0'"
-al_vpn="alias vpn='sudo openvpn --config /home/user/.config/vpn/vpn.ovpn'"
+al_vpn="alias vpn='sudo openvpn --config /home/$USER/.config/vpn/vpn.ovpn'"
 al_lll="alias lll='tree -fiql --dirsfirst --noreport'"
 al_py="alias py='python3'"
 
@@ -176,12 +198,16 @@ do
 done
 
 # Tmp alias for installation only 
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/user'
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
 
 # Create gitingore
-if [[ ! -f .gitignore ]]
+if [[ ! -f $HOME/.gitignore ]]
 then
-    echo ".dotfiles" > .gitignore
+    echo ".dotfiles" > $HOME/.gitignore
+fi
+if [[ ! -d $HOME/.dotfiles/ ]]
+then
+    echo "Did not find .dotfiles, so will check them out again"
     git clone --bare $git_url $HOME/.dotfiles
     dotfiles checkout -f
 else
@@ -202,7 +228,6 @@ fi
 sudo powertop --auto-tune
 
 # Install updates and cleanup unused 
-paru --noconfirm
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 echo ----------------------
