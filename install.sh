@@ -118,6 +118,10 @@ fi
 
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
+#Docker
+sudo systemctl enable docker.service acpid.service --now
+sudo usermod -aG docker $USER
+
 # Virt Manager
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
