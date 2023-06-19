@@ -19,6 +19,21 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 # Install Packages
 paru -S --noconfirm --needed zsh arandr docker sshpass remmina ansible qbittorrent gnu-netcat qemu-full networkmanager-l2tp networkmanager-strongswan remmina-plugin-ultravnc screen meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify-launcher unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols libreoffice-fresh gnome-keyring
 
+code --install-extension alexcvzz.vscode-sqlite
+code --install-extension atlassian.atlascode 
+code --install-extension danielroedl.meld-diff eamodio.gitlens 
+code --install-extension formulahendry.auto-rename-tag 
+code --install-extension idleberg.haskell-nsis 
+code --install-extension idleberg.nsis 
+code --install-extension mhutchie.git-graph 
+code --install-extension ms-azuretools.vscode-docker 
+code --install-extension ms-python.python  
+code --install-extension ms-vscode-remote.remote-containers 
+code --install-extension ms-vscode-remote.remote-ssh 
+code --install-extension redhat.vscode-xml 
+code --install-extension redhat.vscode-yaml 
+code --install-extension tonybaloney.vscode-pets
+
 sudo gpasswd -a $USER uucp
 
 # Generate ssh key
