@@ -122,7 +122,8 @@ sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
-sudo virsh net-autostart default
+## This command does not work, and we do not know the reason or a workaround yet...
+#sudo virsh net-autostart default
 
 # user defaults
 if [ $USER = fw ]; then
