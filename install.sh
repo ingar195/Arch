@@ -17,13 +17,18 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-paru -S --noconfirm --needed acpid alacritty ansible arandr autorandr bc betterlockscreen_rapid-git can-utils \
-    dnsmasq docker dmidecode dunst feh flameshot freecad gnu-netcat gparted google-chrome gnome-keyring \
-    i3exit kicad libreoffice-fresh man meld nautilus network-manager-applet networkmanager networkmanager-l2tp \
-    networkmanager-strongswan ntfs-3g numlockx openvpn pavucontrol peak-linux-headers polybar powertop \
-    qbittorrent qemu-full rclone remmina remmina-plugin-rdesktop remmina-plugin-ultravnc rofi scrot screen \
-    slack-desktop sshpass spotify-launcher subversion ttf-nerd-fonts-symbols unzip usbutils variety \
-    visual-studio-code-bin wget xautolock xclip xorg-xkill zsh
+# not installing
+# betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
+# peak-linux-headers
+paru -S --noconfirm --needed acpid alacritty ansible arandr autorandr bc   \
+    docker dmidecode dunst feh flameshot gnu-netcat gparted  gnome-keyring \
+     kicad man meld nautilus network-manager-applet networkmanager networkmanager-l2tp \
+    networkmanager-strongswan ntfs-3g numlockx pavucontrol  polybar powertop \
+    qbittorrent qemu-full rclone remmina remmina-plugin-rdesktop remmina-plugin-ultravnc rofi screen \
+    sshpass spotify-launcher subversion ttf-nerd-fonts-symbols unzip usbutils variety \
+     wget xautolock xclip xorg-xkill zsh
+paru -S --noconfirm --needed betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
+
 
 code --install-extension alexcvzz.vscode-sqlite
 code --install-extension atlassian.atlascode
