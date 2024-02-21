@@ -17,22 +17,30 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-paru -S --noconfirm --needed zsh arandr remmina-plugin-rdesktop docker sshpass remmina ansible qbittorrent gnu-netcat qemu-full networkmanager-l2tp networkmanager-strongswan remmina-plugin-ultravnc screen meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify-launcher unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin ttf-nerd-fonts-symbols libreoffice-fresh gnome-keyring subversion
+paru -S --noconfirm --needed zsh arandr remmina-plugin-rdesktop docker sshpass remmina ansible \
+ qbittorrent gnu-netcat qemu-full networkmanager-l2tp networkmanager-strongswan remmina-plugin-ultravnc \
+ screen meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify-launcher \
+ unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill \
+ rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager \
+ nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome \
+ freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin \
+ ttf-nerd-fonts-symbols libreoffice-fresh gnome-keyring subversion
 
 code --install-extension alexcvzz.vscode-sqlite
-code --install-extension atlassian.atlascode 
-code --install-extension danielroedl.meld-diff eamodio.gitlens 
-code --install-extension formulahendry.auto-rename-tag 
-code --install-extension idleberg.haskell-nsis 
-code --install-extension idleberg.nsis 
-code --install-extension mhutchie.git-graph 
-code --install-extension ms-azuretools.vscode-docker 
-code --install-extension ms-python.python  
-code --install-extension ms-vscode-remote.remote-containers 
-code --install-extension ms-vscode-remote.remote-ssh 
-code --install-extension redhat.vscode-xml 
-code --install-extension redhat.vscode-yaml 
+code --install-extension atlassian.atlascode
+code --install-extension danielroedl.meld-diff eamodio.gitlens
+code --install-extension formulahendry.auto-rename-tag
+code --install-extension idleberg.haskell-nsis
+code --install-extension idleberg.nsis
+code --install-extension mhutchie.git-graph
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension ms-python.python
+code --install-extension ms-vscode-remote.remote-containers
+code --install-extension ms-vscode-remote.remote-ssh
+code --install-extension redhat.vscode-xml
+code --install-extension redhat.vscode-yaml
 code --install-extension tonybaloney.vscode-pets
+code --install-extension Huuums.vscode-fast-folder-structure
 
 sudo gpasswd -a $USER uucp
 
@@ -46,6 +54,7 @@ sudo timedatectl set-timezone Europe/Oslo
 
 # Set theme
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 
 # Set Backlight permissions and monotor rules
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules
@@ -58,44 +67,6 @@ fi
 
 if ! systemctl is-active --quiet teamviewerd  ; then
     systemctl enable teamviewerd.service --now
-fi
-
-# Check if swap is configured
-if ! grep -q  "/swap/swapfile" /proc/swaps
-then
-  # The swap and Hibernation part goes all credit to 
-  # https://forum.manjaro.org/t/howto-enable-and-configure-hibernation-with-btrfs/51253
-  # Swap
-  export fs_uuid=$(findmnt / -o UUID -n) && echo ${fs_uuid}
-  sudo mount -m -U $fs_uuid /mnt/system-${fs_uuid}
-  sudo btrfs subvolume create /mnt/system-${fs_uuid}/@swap
-  sudo umount /mnt/system-${fs_uuid}
-  sudo mount -m -U ${fs_uuid} -o subvol=@swap,nodatacow /swap
-  sudo touch /swap/swapfile
-  sudo chattr +C /swap/swapfile
-  export swp_size=$(echo "$(grep "MemTotal" /proc/meminfo | tr -d "[:blank:],[:alpha:],:") * 1.6 / 1000" | bc ) && echo $swp_size
-  sudo dd if=/dev/zero of=/swap/swapfile bs=1M count=$swp_size status=progress
-  sudo chmod 0600 /swap/swapfile
-  sudo mkswap /swap/swapfile
-  sudo umount /swap
-  echo -e "UUID=$fs_uuid\t/swap\tbtrfs\tsubvol=@swap,nodatacow,noatime,nospace_cache\t0\t0" | sudo tee -a /etc/fstab
-  echo -e "/swap/swapfile\tnone\tswap\tdefaults\t0\t0" | sudo tee -a /etc/fstab
-  sudo systemctl daemon-reload
-  sudo mount /swap
-  sudo swapon -a
-  swapon -s
-
-  #Hibernate
-  export swp_uuid=$(findmnt -no UUID -T /swap/swapfile) && echo $swp_uuid
-  curl -s "https://raw.githubusercontent.com/osandov/osandov-linux/master/scripts/btrfs_map_physical.c" > bmp.c
-  gcc -O2 -o bmp bmp.c
-  swp_offset=$(echo "$(sudo ./bmp /swap/swapfile | egrep "^0\s+" | cut -f9) / $(getconf PAGESIZE)" | bc) && echo $swp_offset
-  echo -e "GRUB_CMDLINE_LINUX_DEFAULT+=\" resume=UUID=$swp_uuid resume_offset=$swp_offset \"" | sudo tee -a /etc/default/grub
-  echo -e "HOOKS+=( resume )" | sudo tee -a /etc/mkinitcpio.conf
-  sudo mkdir -pv /etc/systemd/system/{systemd-logind.service.d,systemd-hibernate.service.d}
-  echo -e "[Service]\nEnvironment=SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK=1" | sudo tee /etc/systemd/system/systemd-logind.service.d/override.conf
-  echo -e "[Service]\nEnvironment=SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK=1" | sudo tee /etc/systemd/system/systemd-hibernate.service.d/override.conf
-  sudo mkinitcpio -P && sudo grub-mkconfig -o /boot/grub/grub.cfg 
 fi
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
@@ -153,13 +124,6 @@ elif [ $USER = user ]; then
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 
-    # Grub speedup
-    grub_timeout="GRUB_TIMEOUT=0"
-    if ! grep -Fxq $grub_timeout /etc/default/grub
-    then
-        sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-        sudo grub-mkconfig -o /boot/grub/grub.cfg
-
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
     fi
@@ -177,25 +141,6 @@ then
     rm .config/i3/config
     mkdir .config/polybar
 fi
-
-# Aliases
-al_dot="alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'"
-al_dotp="alias dotp='dotfiles commit -am update && dotfiles push'"
-al_rs="alias rs='rsync --info=progress2 -au'"
-al_can="alias cansetup='sudo ip link set can0 type can bitrate 125000 && sudo ip link set up can0'"
-al_vpn="alias vpn='sudo openvpn --config /home/$USER/.config/vpn/vpn.ovpn'"
-al_lll="alias lll='tree -fiql --dirsfirst --noreport'"
-al_py="alias py='python3'"
-
-
-for value in "$al_dot" "$al_rs" "$al_dotp" "$al_can" "$al_vpn" " $al_lll" "$al_py"
-do
-    if ! grep -Fxq "$value" $HOME/.zshrc
-    then
-        echo $value
-        echo $value >> $HOME/.zshrc
-    fi
-done
 
 # Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
@@ -221,8 +166,31 @@ mkdir -P $HOME/.config/vpn &> /dev/null
 
 # not working
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
-    chsh -s /bin/zsh
+    sudo chsh -s /bin/zsh $USER
 fi
+
+
+# Aliases and functions
+# Copy .aliases and .functions files to .config
+zsh_config_path=$HOME/.config/zsh
+mkdir -p $zsh_config_path
+
+cp .aliases $zsh_config_path/
+cp .functions $zsh_config_path/
+
+
+# Function to add source to .zshrc if not already there
+add_source_to_zshrc() {
+    echo "Adding 'source $1 to .zshrc'"
+    if ! grep -Fxq "source $1" $HOME/.zshrc; then
+        echo "source $1" >> $HOME/.zshrc
+    fi
+}
+
+# Add sources to .zshrc if not already there
+add_source_to_zshrc "$zsh_config_path/.aliases"
+add_source_to_zshrc "$zsh_config_path/.functions"
+add_source_to_zshrc "$zsh_config_path/.work"
 
 # Power settings
 sudo powertop --auto-tune

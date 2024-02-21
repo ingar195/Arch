@@ -1,0 +1,10 @@
+function install() {
+    sudo apt install "$1" -y
+}
+function uninstall() {
+    sudo apt purge "$1" -y
+}
+function update() {
+    sudo apt update -y
+    sudo apt upgrade -y
+}
