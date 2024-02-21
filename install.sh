@@ -7,9 +7,9 @@ sudo pacman -S --noconfirm --needed base-devel git rust
 # TODO: Add error handing of install 
 # Install Paru helper
 if ! [ -f $(which paru) ]; then
-git clone https://aur.archlinux.org/paru.git
-cd paru && makepkg -si && cd ..
-sudo rm -R paru
+    git clone https://aur.archlinux.org/paru.git
+    cd paru && makepkg -si && cd ..
+    sudo rm -R paru
 fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
@@ -17,10 +17,10 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-paru -S --noconfirm --needed zsh arandr remmina-plugin-rdesktop docker sshpass remmina ansible \
+paru -S --noconfirm --needed zsh arandr alacritty remmina-plugin-rdesktop docker sshpass remmina ansible \
  qbittorrent gnu-netcat qemu-full networkmanager-l2tp networkmanager-strongswan remmina-plugin-ultravnc \
  screen meld betterlockscreen_rapid-git dnsmasq rclone ntfs-3g flameshot acpid bc numlockx spotify-launcher \
- unzip usbutils dmidecode autorandr pavucontrol variety termite feh git tree virt-manager dunst xclip xorg-xkill \
+ unzip usbutils dmidecode autorandr pavucontrol variety feh git tree virt-manager dunst xclip xorg-xkill \
  rofi acpilight nautilus scrot teamviewer network-manager-applet xautolock man powertop networkmanager \
  nm-connection-editor network-manager-applet openvpn slack-desktop wget python google-chrome \
  freecad gparted peak-linux-headers kicad i3exit polybar parsec-bin can-utils visual-studio-code-bin \
@@ -126,7 +126,7 @@ elif [ $USER = user ]; then
 
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
-    fi
+    
 
 
 elif [ $USER = screen ]; then
