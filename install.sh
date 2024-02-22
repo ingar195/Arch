@@ -29,6 +29,7 @@ done < packages
 
 # code --install-extension alexcvzz.vscode-sqlite
 code --install-extension atlassian.atlascode
+code --install-extension GitHub.copilot
 code --install-extension eamodio.gitlens
 code --install-extension formulahendry.auto-rename-tag
 code --install-extension idleberg.haskell-nsis
