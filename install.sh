@@ -5,7 +5,7 @@ sudo pacman --noconfirm -Sy
 sudo pacman -S --noconfirm --needed base-devel git rust
 
 # Install Paru helper
-if ! command -v paru &> /dev/null; then
+if ! command -v paru --help &> /dev/null; then
     git clone https://aur.archlinux.org/paru.git
     cd paru && makepkg -si && cd ..
     sudo rm -R paru
