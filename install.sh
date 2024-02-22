@@ -29,14 +29,13 @@ paru -S --noconfirm --needed acpid alacritty ansible arandr autorandr bc   \
 paru -S --noconfirm --needed betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
 
 
-code --install-extension alexcvzz.vscode-sqlite
+# code --install-extension alexcvzz.vscode-sqlite
 code --install-extension atlassian.atlascode
-code --install-extension danielroedl.meld-diff eamodio.gitlens
+code --install-extension eamodio.gitlens
 code --install-extension formulahendry.auto-rename-tag
 code --install-extension idleberg.haskell-nsis
 code --install-extension idleberg.nsis
 code --install-extension mhutchie.git-graph
-code --install-extension ms-azuretools.vscode-docker
 code --install-extension ms-python.python
 code --install-extension ms-vscode-remote.remote-containers
 code --install-extension ms-vscode-remote.remote-ssh
