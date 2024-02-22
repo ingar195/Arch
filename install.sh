@@ -18,15 +18,13 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 # Install Packages
 # not installing
 # betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
-# peak-linux-headers
-paru -S --noconfirm --needed acpid alacritty ansible arandr autorandr bc   \
-    docker dmidecode dunst feh flameshot gnu-netcat gparted  gnome-keyring \
-     kicad man meld nautilus network-manager-applet networkmanager networkmanager-l2tp \
-    networkmanager-strongswan ntfs-3g numlockx pavucontrol  polybar powertop \
-    qbittorrent qemu-full rclone remmina remmina-plugin-rdesktop remmina-plugin-ultravnc rofi screen \
-    sshpass spotify-launcher subversion ttf-nerd-fonts-symbols unzip usbutils variety \
-     wget xautolock xclip xorg-xkill zsh
-paru -S --noconfirm --needed betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
+# peak-linux-headers remmina-plugin-ultravnc
+paru -S --noconfirm --needed
+
+# Install Packages from file
+while IFS= read -r package; do
+    paru -S --noconfirm --needed "$package"
+done < packages
 
 
 # code --install-extension alexcvzz.vscode-sqlite

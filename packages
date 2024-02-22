@@ -1,96 +1,54 @@
-mesa-utils
-xf86-video-intel
 acpid
+alacritty
+ansible
+aop
+arandr
+autorandr
 bc
-numlockx
-freecad
-gparted
-peak-linux-headers
-unzip
-kicad
-pulseaudio-bluetooth
-parsec-bin
-usbutils
-can-utils
-i3exit
+betterlockscreen_rapid-git
+can-utils-git
 dmidecode
-visual-studio-code-bin
-powerkit
-autorandr 
-pavucontrol
-variety
-feh
-git
-tree
-dhcpd
-virtmanager
+docker
 dunst
-xclip
-xkill
-rofi
-acpilight
+feh
+flameshot
+gnome-keyring
+gnu-netcat
+google-chrome
+gparted
+i3exit
+kicad
+man
+meld
 nautilus
-spotify
-scrot
-teamviewer
-oblogout-blurlock
-xautolock
-nm-applet
-xfce4-power-manager
-xautolock
-zsh
-powertop
-polybar
 networkmanager
-nm-connection-editor
-network-manager-applet 
-openvpn
+network-manager-applet
+networkmanager-l2tp
+networkmanager-strongswan
+ntfs-3g
+numlockx
+pavucontrol
+polybar
+powertop
+qbittorrent
+qemu-full
+rclone
+remmina
+remmina-plugin-rdesktop
+rofi
+screen
+slack-dacpid
 slack-desktop
-
-
-command
-ssh-keygen
-gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-
-script:
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-paru 
-echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee -a /etc/udev/rules.d/backlight-permissions.rules
-sudo echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules
-
-
-services:
-systemctl enable NetworkManager.service
-systemctl start NetworkManager.service
-systemctl enable teamviewerd.service
-systemctl start teamviewerd.service
-
-
-hib
-/etc/systemd/zram-generator.conf
-[zram0]
-zram-size = ram
-compression-algorithm = zstd
-
-
-sudo nano /usr/bin/cansetup
-sudo ip link set can0 type can bitrate 125000
-sudo ip link set up can0
-
-sudo chmod +x /usr/bin/cansetup
-
-git config --global user.email "you@example.com"
-git config --global user.name "Your Name"
-
-
-
-swap:
-https://forum.manjaro.org/t/howto-enable-and-configure-hibernation-with-btrfs/51253
-
-bash -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
-sudo bash -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
-
-
-
-
-https://github.com/Th3Whit3Wolf/Faster-Arch
+spotify-launcher
+sshpass
+subversion
+ttf-nerd-fonts-symbols
+unzip
+usbutils
+variety
+visual-studio-code-bin
+wget
+xautolock
+xclip
+xorg-xkill
+zsh
