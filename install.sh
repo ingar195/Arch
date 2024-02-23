@@ -22,9 +22,14 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 paru -S --noconfirm --needed
 
 # Install Packages from file
-while IFS= read -r package; do
-    paru -S --noconfirm --needed "$package"
-done < packages
+install_packages() {
+    local filename=$1
+    while IFS= read -r package; do
+        paru -S --noconfirm --needed "$package" || echo " failed to install $package" >> error.log
+    done < "$filename"
+}
+
+install_packages "packages"
 
 
 # code --install-extension alexcvzz.vscode-sqlite
