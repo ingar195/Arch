@@ -55,6 +55,7 @@ sudo timedatectl set-timezone Europe/Oslo
 
 # Set theme
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 
 # Set Backlight permissions and monotor rules
@@ -111,7 +112,7 @@ if [ $USER = fw ]; then
 
     paru -S --noconfirm --needed dwm st xorg-xinit xorg-server neovim rsync microsoft-edge-stable-bin qelectrotech libva-intel-driver dmenu prusa-slicer xidlehook
 
-elif [ $USER = user ]; then
+elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
     
     # Power Save
@@ -163,7 +164,7 @@ fi
 # Create folders for filemanager
 mkdir -p $HOME/Downloads &> /dev/null
 mkdir -p $HOME/Desktop &> /dev/null
-mkdir -P $HOME/.config/vpn &> /dev/null
+mkdir -P $HOME/.config/wireguard &> /dev/null
 
 # not working
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
@@ -182,22 +183,30 @@ cp .functions $zsh_config_path/
 
 # Function to add source to .zshrc if not already there
 add_source_to_zshrc() {
-    echo "Adding 'source $1 to .zshrc'"
-    if ! grep -Fxq "source $1" $HOME/.zshrc; then
-        echo "source $1" >> $HOME/.zshrc
+    if [[ -f $HOME/.zshrc ]]; then
+        echo "Adding 'source $1 to .zshrc'"
+        if ! grep -Fxq "source $1" $HOME/.zshrc; then
+            echo "source $1" >> $HOME/.zshrc
+        fi
     fi
 }
 
 # Add sources to .zshrc if not already there
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
-add_source_to_zshrc "$zsh_config_path/.work"
+
+read -p "Do you want to add the work source to .zshrc? (y/n): " answer
+
+if [[ $answer == "y" ]]; then
+    add_source_to_zshrc "$zsh_config_path/.work"
+fi
 
 # Power settings
 sudo powertop --auto-tune
 
 # Install updates and cleanup unused 
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
+
 
 echo ----------------------
 echo "Please reboot your PC"
