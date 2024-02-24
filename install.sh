@@ -62,11 +62,11 @@ sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" >
 
 # Enable services
 if ! systemctl is-active --quiet NetworkManager ; then
-    systemctl enable NetworkManager.service --now
+    sudo systemctl enable NetworkManager.service --now
 fi
 
 if ! systemctl is-active --quiet teamviewerd  ; then
-    systemctl enable teamviewerd.service --now
+    sudo systemctl enable teamviewerd.service --now
 fi
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
