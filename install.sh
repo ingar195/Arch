@@ -108,7 +108,7 @@ if [ $USER = fw ]; then
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
 
-    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server qelectrotech neovim microsoft-edge-stable-bin libva-intel-driver dmenu prusa-slicer xidlehook
+    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server qemu-full qelectrotech neovim microsoft-edge-stable-bin libva-intel-driver dmenu prusa-slicer xidlehook
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
