@@ -1,8 +1,9 @@
 # Update pacman database
 sudo pacman --noconfirm -Sy
 
-# Go to home
 sudo pacman -S --noconfirm --needed base-devel git rust
+
+sudo gpasswd -a $USER uucp
 
 # Install Paru helper
 if ! command -v paru --help &> /dev/null; then
@@ -31,24 +32,16 @@ install_packages() {
 
 install_packages "packages"
 
+install_code_packages() {
+    local filename=$1
+    while IFS= read -r package; do
+        code --install-extension  "$package" || echo " failed to install $package" >> error.log
+    done < "$filename"
+}
 
-# code --install-extension alexcvzz.vscode-sqlite
-code --install-extension atlassian.atlascode
-code --install-extension GitHub.copilot
-code --install-extension eamodio.gitlens
-code --install-extension formulahendry.auto-rename-tag
-code --install-extension idleberg.haskell-nsis
-code --install-extension idleberg.nsis
-code --install-extension mhutchie.git-graph
-code --install-extension ms-python.python
-code --install-extension ms-vscode-remote.remote-containers
-code --install-extension ms-vscode-remote.remote-ssh
-code --install-extension redhat.vscode-xml
-code --install-extension redhat.vscode-yaml
-code --install-extension tonybaloney.vscode-pets
-code --install-extension Huuums.vscode-fast-folder-structure
+install_code_packages "code_packages"
 
-sudo gpasswd -a $USER uucp
+
 
 # Generate ssh key
 if [[ ! -f $HOME/.ssh/id_rsa ]]
@@ -115,7 +108,7 @@ if [ $USER = fw ]; then
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
 
-    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server neovim rsync microsoft-edge-stable-bin qelectrotech libva-intel-driver dmenu prusa-slicer xidlehook
+    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server neovim microsoft-edge-stable-bin libva-intel-driver dmenu prusa-slicer xidlehook
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
@@ -175,7 +168,6 @@ mkdir -P $HOME/.config/wireguard &> /dev/null
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
 fi
-
 
 # Aliases and functions
 # Copy .aliases and .functions files to .config
