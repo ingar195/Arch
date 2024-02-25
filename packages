@@ -15,6 +15,7 @@ dunst
 feh
 flameshot
 gnome-keyring
+gnome-themes-extra
 gnu-netcat
 google-chrome
 gparted
@@ -54,3 +55,4 @@ wget
 xautolock
 xclip
 xorg-xkill
+numix-gtk-theme-git

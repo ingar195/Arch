@@ -55,7 +55,6 @@ sudo timedatectl set-timezone Europe/Oslo
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
-
 # Set Backlight permissions and monotor rules
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules'
@@ -125,8 +124,8 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     install_packages "user_packages"
 
     # greeter
-    sudo sed -i 's/#theme-name=/theme-name=Arc-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#icon-theme-name=/icon-theme-name = Papirus-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
+    sudo sed -i 's/#theme-name=/theme-name=Numix/g' /etc/lightdm/lightdm-gtk-greeter.conf
+    sudo sed -i 's/#icon-theme-name=/icon-theme-name=Papirus-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
     sudo sed -i 's/#background=/background=#2f343f/g' /etc/lightdm/lightdm-gtk-greeter.conf
     sudo sed -i 's/#xft-dpi=/xft-dpi=261/g' /etc/lightdm/lightdm-gtk-greeter.conf
 
@@ -205,7 +204,7 @@ add_source_to_zshrc() {
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
 
-read -p "Do you want to add the work source to .zshrc? (y/n): " answer
+read -p "Do you want to add the work source to .zshrc? (y/N): " answer
 
 if [[ $answer == "y" ]]; then
     add_source_to_zshrc "$zsh_config_path/.work"
