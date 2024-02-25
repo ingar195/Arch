@@ -205,6 +205,7 @@ sudo powertop --auto-tune
 # Install updates and cleanup unused 
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
+sed -i 's/https:\/\/github.com\//git@github.com:g' /home/$USER/.dotfiles/config
 
 echo ----------------------
 echo "Please reboot your PC"
