@@ -61,13 +61,14 @@ echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/bright
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules'
 
 # Enable services
-if ! systemctl is-active --quiet NetworkManager ; then
-    sudo systemctl enable NetworkManager.service --now
-fi
-
 if ! systemctl is-active --quiet teamviewerd  ; then
     sudo systemctl enable teamviewerd.service --now
 fi
+
+# Setup Network manager
+sudo systemctl disable systemd-networkd.service
+sudo systemctl disable iwd.service
+sudo systemctl enable NetworkManager.service --now
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
@@ -163,6 +164,7 @@ fi
 # Create folders for filemanager
 mkdir -p $HOME/Downloads &> /dev/null
 mkdir -p $HOME/Desktop &> /dev/null
+mkdir -P $HOME/Pictures &> /dev/null
 mkdir -P $HOME/.config/wireguard &> /dev/null
 
 # not working
