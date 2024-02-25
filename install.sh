@@ -120,6 +120,13 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
     sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
     install_packages "user_packages"
+
+    # greeter
+    sudo sed -i 's/#theme-name=/theme-name=Arc-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
+    sudo sed -i 's/#icon-theme-name=/icon-theme-name = Papirus-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
+    sudo sed -i 's/#background=/background=#2f343f/g' /etc/lightdm/lightdm-gtk-greeter.conf
+    sudo sed -i 's/#xft-dpi=/xft-dpi=261/g' /etc/lightdm/lightdm-gtk-greeter.conf
+
     
     sudo systemctl enable lightdm
     # Dunst settings 
