@@ -65,6 +65,9 @@ if ! systemctl is-active --quiet teamviewerd  ; then
     sudo systemctl enable teamviewerd.service --now
 fi
 
+# Setup syslog-ng
+sudo systemctl enable syslog-ng@default.service --now
+
 # Setup Network manager
 sudo systemctl disable systemd-networkd.service
 sudo systemctl disable iwd.service
