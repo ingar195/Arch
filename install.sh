@@ -207,8 +207,7 @@ sudo powertop --auto-tune
 # Install updates and cleanup unused 
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
-sed -i 's/https:\/\/github.com\//git@github.com:g' /home/$USER/.dotfiles/config
-
+sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
 
 # git@github.com:ingar195/Arch.git
 
