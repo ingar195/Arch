@@ -215,6 +215,7 @@ sudo powertop --auto-tune
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+dotfiles push --set-upstream origin master
 
 # git@github.com:ingar195/Arch.git
 
