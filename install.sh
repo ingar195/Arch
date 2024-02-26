@@ -77,12 +77,12 @@ sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-n
 
 if [ ! $(git config user.email)  ]; then
     read -p "Type your git email:  " git_email
-    git config --global user.email $git_email
+    git config --global user.email "$git_email"
     
 fi
 if [ ! $(git config user.name)  ]; then
     read -p "Type your git Full name:  " git_name
-    git config --global user.name $git_name
+    git config --global user.name "$git_name"
 fi
 
 if [[ ! -f $HOME/.zshrc ]]
