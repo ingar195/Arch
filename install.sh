@@ -26,7 +26,12 @@ paru -S --noconfirm --needed
 install_packages() {
     local filename=$1
     while IFS= read -r package; do
-        paru -S --noconfirm --needed "$package" || echo " failed to install $package" >> error.log
+        echo "--------------------------------Installing $package"
+        start_time=$(date +%s)
+        paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> paru.log
+        end_time=$(date +%s)
+        duration=$((end_time - start_time))
+        echo "Installation of $package took $duration sec" >> paru.log
     done < "$filename"
 }
 

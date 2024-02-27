@@ -2,11 +2,9 @@ zsh
 acpid
 alacritty
 ansible
-aop
 arandr
 autorandr
 bc
-betterlockscreen_rapid-git
 brightnessctl
 can-utils
 dmidecode
@@ -19,7 +17,6 @@ gnome-themes-extra
 gnu-netcat
 google-chrome
 gparted
-i3exit
 kicad
 man
 meld
@@ -27,11 +24,9 @@ nautilus
 networkmanager
 network-manager-applet
 networkmanager-l2tp
-networkmanager-strongswan
 ntfs-3g
 numlockx
 pavucontrol
-polybar
 powertop
 qbittorrent
 rclone
@@ -41,14 +36,11 @@ rofi
 rsync
 screen
 slack-desktop
-spotify-launcher
 sshpass
 syslog-ng
 subversion
 teamviewer
-ttf-nerd-fonts-symbols
 unzip
-usbutils
 variety
 visual-studio-code-bin
 wget
