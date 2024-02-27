@@ -23,7 +23,7 @@ if ! command -v paru --help &> /dev/null; then
     cd paru-bin
     makepkg -si --noconfirm
     cd ..
-    sudorm -r paru-bin
+    sudo rm -r paru-bin
 fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
