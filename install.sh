@@ -9,7 +9,7 @@ sudo gpasswd -a $USER uucp
 if ! command -v paru --help &> /dev/null; then
     git clone https://aur.archlinux.org/paru-bin.git
     cd paru-bin
-    makepkg -Acs
+    makepkg -si --noconfirm
     cd ..
     rm -r paru-bin
 fi
