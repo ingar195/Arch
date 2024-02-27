@@ -1,15 +1,29 @@
 # Update pacman database
 sudo pacman --noconfirm -Sy
-
 sudo pacman -S --noconfirm --needed base-devel git rust
+
+read -p "Do you want to add the work source to .zshrc? (y/N): " zsh_work
+
+if [ ! $(git config user.email)  ]; then
+    read -p "Type your git email:  " git_email
+    git config --global user.email "$git_email"
+    
+fi
+if [ ! $(git config user.name)  ]; then
+    read -p "Type your git Full name:  " git_name
+    git config --global user.name "$git_name"
+fi
+
 
 sudo gpasswd -a $USER uucp
 
 # Install Paru helper
 if ! command -v paru --help &> /dev/null; then
-    git clone https://aur.archlinux.org/paru.git
-    cd paru && makepkg -si && cd ..
-    sudo rm -R paru
+    git clone https://aur.archlinux.org/paru-bin.git
+    cd paru-bin
+    makepkg -si --noconfirm
+    cd ..
+    sudorm -r paru-bin
 fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
@@ -17,9 +31,6 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-# not installing
-# betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
-# peak-linux-headers remmina-plugin-ultravnc
 paru -S --noconfirm --needed
 
 # Install Packages from file
@@ -31,7 +42,7 @@ install_packages() {
         paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> paru.log
         end_time=$(date +%s)
         duration=$((end_time - start_time))
-        echo "Installation of $package took $duration sec" >> paru.log
+        echo "INFO: Installation of $package took $duration sec" >> paru.log
     done < "$filename"
 }
 
@@ -79,16 +90,6 @@ sudo systemctl enable NetworkManager.service --now
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
-
-if [ ! $(git config user.email)  ]; then
-    read -p "Type your git email:  " git_email
-    git config --global user.email "$git_email"
-    
-fi
-if [ ! $(git config user.name)  ]; then
-    read -p "Type your git Full name:  " git_name
-    git config --global user.name "$git_name"
-fi
 
 if [[ ! -f $HOME/.zshrc ]]
 then
@@ -209,9 +210,8 @@ add_source_to_zshrc() {
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
 
-read -p "Do you want to add the work source to .zshrc? (y/N): " answer
 
-if [[ $answer == "y" ]]; then
+if [[ $zsh_work == "y" ]]; then
     add_source_to_zshrc "$zsh_config_path/.work"
 fi
 
@@ -222,9 +222,6 @@ sudo powertop --auto-tune
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
-dotfiles push --set-upstream origin master
-
-# git@github.com:ingar195/Arch.git
 
 echo ----------------------
 echo "Please reboot your PC"
