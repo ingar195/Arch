@@ -7,9 +7,11 @@ sudo gpasswd -a $USER uucp
 
 # Install Paru helper
 if ! command -v paru --help &> /dev/null; then
-    git clone https://aur.archlinux.org/paru.git
-    cd paru && makepkg -si && cd ..
-    sudo rm -R paru
+    git clone https://aur.archlinux.org/paru-bin.git
+    cd paru-bin
+    makepkg -Acs
+    cd ..
+    rm -r paru-bin
 fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
