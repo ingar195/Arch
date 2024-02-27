@@ -11,7 +11,7 @@ if ! command -v paru --help &> /dev/null; then
     cd paru-bin
     makepkg -si --noconfirm
     cd ..
-    rm -r paru-bin
+    sudo rm -r paru-bin
 fi
 
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
@@ -19,9 +19,6 @@ sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages
-# not installing
-# betterlockscreen_rapid-git can-utils google-chrome i3exit  slack-desktop visual-studio-code-bin
-# peak-linux-headers remmina-plugin-ultravnc
 paru -S --noconfirm --needed
 
 # Install Packages from file
