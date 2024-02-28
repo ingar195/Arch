@@ -103,6 +103,8 @@ sudo systemctl enable docker.service acpid.service --now
 sudo usermod -aG docker $USER
 
 # Virt Manager
+
+# TODO: The services does not exist
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
