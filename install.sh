@@ -9,7 +9,7 @@ if [ ! $(git config user.email)  ]; then
     git config --global user.email "$git_email"
     
 fi
-if [ ! $(git config user.name)  ]; then
+if [ -z "$(git config user.name)" ]; then
     read -p "Type your git Full name:  " git_name
     git config --global user.name "$git_name"
 fi
