@@ -38,11 +38,11 @@ install_packages() {
     local filename=$1
     while IFS= read -r package; do
         echo "--------------------------------Installing $package"
-        start_time=$(date +%s)
+        # start_time=$(date +%s)
         paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> paru.log
-        end_time=$(date +%s)
-        duration=$((end_time - start_time))
-        echo "INFO: Installation of $package took $duration sec" >> paru.log
+        # end_time=$(date +%s)
+        # duration=$((end_time - start_time))
+        # echo "INFO: Installation of $package took $duration sec" >> paru.log
     done < "$filename"
 }
 
