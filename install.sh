@@ -76,6 +76,8 @@ gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+sed -i 's/ColorScheme = 1/ColorScheme = 2/g' /home/$USER/.config/teamviewer/client.conf 
+
 
 # Set Backlight permissions and monotor rules
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules
