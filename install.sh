@@ -2,8 +2,8 @@
 sudo pacman --noconfirm -Sy
 sudo pacman -S --noconfirm --needed base-devel git rust
 
-if [ -f $HOME/.zshrc ]; then
-    if [! $(grep -q "source $HOME/.config/zsh/.work" $HOME/.zshrc)]; then
+if [ -f "$HOME/.zshrc" ]; then
+    if ! grep -q "source $HOME/.config/zsh/.work" "$HOME/.zshrc"; then
         read -p "Do you want to add the work source to .zshrc? (y/N): " zsh_work
     fi
 fi
@@ -39,11 +39,17 @@ paru -S --noconfirm --needed
 
 # Install Packages from file
 install_packages() {
+    echo "Installing packages"
     local filename=$1
     while IFS= read -r package; do
-        echo "--------------------------------Installing $package"
         # start_time=$(date +%s)
-        paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> paru.log
+        # Check is package is already installed
+        if paru -Qs "$package" &> /dev/null; then
+            echo "INFO: $package is already installed" >> log.log
+            continue
+        fi
+        echo "--------------------------------Installing $package"
+        paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> error.log
         # end_time=$(date +%s)
         # duration=$((end_time - start_time))
         # echo "INFO: Installation of $package took $duration sec" >> paru.log
@@ -53,8 +59,13 @@ install_packages() {
 install_packages "packages"
 
 install_code_packages() {
+    echo "Installing code extensions"
     local filename=$1
     while IFS= read -r package; do
+        if code --list-extensions | grep -i "$package" &> /dev/null; then
+            echo "INFO: $package is already installed" >> log.log
+            continue
+        fi
         code --install-extension  "$package" || echo " failed to install $package" >> error.log
     done < "$filename"
 }
@@ -78,6 +89,9 @@ gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
 sed -i 's/ColorScheme = 1/ColorScheme = 2/g' /home/$USER/.config/teamviewer/client.conf 
 
+if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
+    echo "GTK_THEME=Adwaita-dark" | sudo tee -a /etc/environment
+fi
 
 # Set Backlight permissions and monotor rules
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules
@@ -171,8 +185,7 @@ else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
 
-if [[ ! -f .dotfiles/config ]]
-then
+if [ ! -f "$HOME/.dotfiles/config" ];then
     rm .config/i3/config
     mkdir .config/polybar
 fi
