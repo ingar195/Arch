@@ -1,6 +1,6 @@
 # Update pacman database
 sudo pacman --noconfirm -Sy
-sudo pacman -S --noconfirm --needed base-devel git rust 
+sudo pacman -S --noconfirm --needed base-devel git rust &> /dev/null
 
 if [ -f "$HOME/.zshrc" ]; then
     if ! grep -q "source $HOME/.config/zsh/.work" "$HOME/.zshrc"; then
@@ -18,7 +18,7 @@ if [ -z "$(git config user.name)" ]; then
     git config --global user.name "$git_name"
 fi
 
-
+# Add user to uucp group to allow access to serial ports
 sudo gpasswd -a $USER uucp
 
 # Install Paru helper
@@ -30,12 +30,10 @@ if ! command -v paru --help &> /dev/null; then
     sudo rm -r paru-bin
 fi
 
+echo "Setting up paru"
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
 sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
-
-# Install Packages
-paru -S --noconfirm --needed
 
 # Install Packages from file
 install_packages() {
@@ -72,8 +70,6 @@ install_code_packages() {
 
 install_code_packages "code_packages"
 
-
-
 # Generate ssh key
 if [[ ! -f $HOME/.ssh/id_rsa ]]
 then
@@ -83,6 +79,7 @@ fi
 sudo timedatectl set-timezone Europe/Oslo
 
 # Set theme
+echo "Setting up theme"
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
@@ -117,9 +114,9 @@ sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-n
 if [[ ! -f $HOME/.zshrc ]]
 then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 fi
 
-sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 
 #Docker
 sudo systemctl enable docker.service acpid.service --now
@@ -160,12 +157,11 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
     install_packages "user_packages"
 
-    # greeter
+    # Greeter
     sudo sed -i 's/#theme-name=/theme-name=Numix/g' /etc/lightdm/lightdm-gtk-greeter.conf
     sudo sed -i 's/#icon-theme-name=/icon-theme-name=Papirus-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
     sudo sed -i 's/#background=/background=#2f343f/g' /etc/lightdm/lightdm-gtk-greeter.conf
     sudo sed -i 's/#xft-dpi=/xft-dpi=261/g' /etc/lightdm/lightdm-gtk-greeter.conf
-
     
     sudo systemctl enable lightdm
     # Dunst settings 
@@ -200,9 +196,10 @@ fi
 if [[ ! -d $HOME/.dotfiles/ ]]
 then
     echo "Did not find .dotfiles, so will check them out again"
-    git clone --bare $git_url $HOME/.dotfiles
+    git clone --bare $git_url $HOME/.dotfiles &> /dev/null
     dotfiles checkout -f
 else
+    echo "Updating dotfiles"
     dotfiles pull
 fi
 
@@ -250,6 +247,7 @@ echo "Setting up power settings"
 sudo powertop --auto-tune &> /dev/null
 
 # Install updates and cleanup unused 
+echo "Checking for updates and removing unused packages"
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
