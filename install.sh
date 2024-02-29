@@ -2,7 +2,11 @@
 sudo pacman --noconfirm -Sy
 sudo pacman -S --noconfirm --needed base-devel git rust
 
-read -p "Do you want to add the work source to .zshrc? (y/N): " zsh_work
+if [ -f $HOME/.zshrc ]; then
+    if [! $(grep -q "source $HOME/.config/zsh/.work" $HOME/.zshrc)]; then
+        read -p "Do you want to add the work source to .zshrc? (y/N): " zsh_work
+    fi
+fi
 
 if [ ! $(git config user.email)  ]; then
     read -p "Type your git email:  " git_email
@@ -62,7 +66,7 @@ install_code_packages "code_packages"
 # Generate ssh key
 if [[ ! -f $HOME/.ssh/id_rsa ]]
 then
-    ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+    ssh-keygen -m PEM -N '' -f ~/.ssh/id_rsa
 fi
 
 sudo timedatectl set-timezone Europe/Oslo
@@ -71,6 +75,8 @@ sudo timedatectl set-timezone Europe/Oslo
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
+xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+
 # Set Backlight permissions and monotor rules
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules'

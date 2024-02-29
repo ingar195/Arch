@@ -46,6 +46,7 @@ visual-studio-code-bin
 wget
 xautolock
 xclip
+xfce4-settings
 xorg-xkill
 numix-gtk-theme-git
 wireguard-tools
