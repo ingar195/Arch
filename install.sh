@@ -1,6 +1,6 @@
 # Update pacman database
 sudo pacman --noconfirm -Sy
-sudo pacman -S --noconfirm --needed base-devel git rust
+sudo pacman -S --noconfirm --needed base-devel git rust 
 
 if [ -f "$HOME/.zshrc" ]; then
     if ! grep -q "source $HOME/.config/zsh/.work" "$HOME/.zshrc"; then
@@ -94,8 +94,9 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
 fi
 
 # Set Backlight permissions and monotor rules
-echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules
-sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules'
+echo "Setting up backlight permissions and monitor rules"
+echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
+sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
 
 # Enable services
 if ! systemctl is-active --quiet teamviewerd  ; then
@@ -125,8 +126,6 @@ sudo systemctl enable docker.service acpid.service --now
 sudo usermod -aG docker $USER
 
 # Virt Manager
-
-# TODO: The services does not exist
 sudo usermod -G libvirt -a $USER
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
@@ -230,24 +229,25 @@ cp .functions $zsh_config_path/
 # Function to add source to .zshrc if not already there
 add_source_to_zshrc() {
     if [[ -f $HOME/.zshrc ]]; then
-        echo "Adding 'source $1 to .zshrc'"
         if ! grep -Fxq "source $1" $HOME/.zshrc; then
+            echo "Adding 'source $1 to .zshrc'"
             echo "source $1" >> $HOME/.zshrc
         fi
     fi
 }
 
 # Add sources to .zshrc if not already there
+echo "Adding sources to .zshrc"
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
-
 
 if [[ $zsh_work == "y" ]]; then
     add_source_to_zshrc "$zsh_config_path/.work"
 fi
 
 # Power settings
-sudo powertop --auto-tune
+echo "Setting up power settings"
+sudo powertop --auto-tune &> /dev/null
 
 # Install updates and cleanup unused 
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
