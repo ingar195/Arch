@@ -37,7 +37,7 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages from file
 install_packages() {
-    echo "Installing packages"
+    echo "Installing" $1
     local filename=$1
     while IFS= read -r package; do
         # start_time=$(date +%s)
