@@ -170,7 +170,10 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
     
-
+    if [ ! -f "$HOME/.dotfiles/config" ];then
+        rm .config/i3/config
+        mkdir .config/polybar
+    fi
 
 elif [ $USER = screen ]; then
     # Autostart script for web kiosk
@@ -179,10 +182,6 @@ else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
 
-if [ ! -f "$HOME/.dotfiles/config" ];then
-    rm .config/i3/config
-    mkdir .config/polybar
-fi
 
 # Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
