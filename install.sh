@@ -240,6 +240,9 @@ if [[ $zsh_work == "y" ]]; then
     add_source_to_zshrc "$zsh_config_path/.work"
 fi
 
+# Update locate database
+sudo updatedb
+
 # Power settings
 echo "Setting up power settings"
 sudo powertop --auto-tune &> /dev/null
