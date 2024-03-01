@@ -129,6 +129,9 @@ sudo systemctl start libvirtd.service
 ## This command does not work, and we do not know the reason or a workaround yet...
 #sudo virsh net-autostart default
 
+# Wazuh-agent
+sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
+
 # user defaults
 if [ $USER = fw ]; then
     git_url="https://github.com/frodus/dotfiles.git"
