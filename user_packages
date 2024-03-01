@@ -1,6 +1,3 @@
-i3-wm
-i3blocks
-i3exit
 
 lightdm
 lightdm-gtk-greeter
@@ -9,6 +6,10 @@ lightdm-gtk-greeter-settings
 xorg-server
 xorg-apps
 xorg-xinit
+
+i3-wm
+i3blocks
+i3exit
 
 tlp
 tlp-rdw
