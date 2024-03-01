@@ -59,8 +59,9 @@ install_packages "packages"
 install_code_packages() {
     echo "Installing code extensions"
     local filename=$1
+    local installed_extensions=$(code --list-extensions)
     while IFS= read -r package; do
-        if code --list-extensions | grep -i "$package" &> /dev/null; then
+        if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
             echo "INFO: $package is already installed" >> log.log
             continue
         fi
