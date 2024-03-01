@@ -112,12 +112,6 @@ sudo systemctl enable NetworkManager.service --now
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 
-if [ ! -f $HOME/.zshrc ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
-fi
-
-
 #Docker
 sudo systemctl enable docker.service acpid.service --now
 sudo usermod -aG docker $USER
@@ -211,6 +205,11 @@ mkdir -P $HOME/.config/wireguard &> /dev/null
 # not working
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
+fi
+
+if [ ! -f $HOME/.zshrc ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 fi
 
 # Aliases and functions
