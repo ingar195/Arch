@@ -19,7 +19,9 @@ if [ -z "$(git config user.name)" ]; then
 fi
 
 # Add user to uucp group to allow access to serial ports
-sudo gpasswd -a $USER uucp
+if ! groups $USER | grep &>/dev/null '\buucp\b'; then
+    sudo gpasswd -a $USER uucp
+fi
 
 # Install Paru helper
 if ! command -v paru --help &> /dev/null; then
