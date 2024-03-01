@@ -39,7 +39,7 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages from file
 install_packages() {
-    echo "Installing packages"
+    echo "Installing" $1
     local filename=$1
     while IFS= read -r package; do
         # start_time=$(date +%s)
@@ -125,22 +125,19 @@ sudo systemctl start libvirtd.service
 ## This command does not work, and we do not know the reason or a workaround yet...
 #sudo virsh net-autostart default
 
+# Wazuh-agent
+sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
+
 # user defaults
 if [ $USER = fw ]; then
     git_url="https://github.com/frodus/dotfiles.git"
 
-# Add Teamviewer config to make it start
+    # Add Teamviewer config to make it start
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
 
-    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server qemu-full qelectrotech neovim microsoft-edge-stable-bin libva-intel-driver dmenu prusa-slicer xidlehook xfce4-settings wazuh-agent systemd-resolvconf
-
-    # run daemon xfsettingsd
+    install_packages $USER"_packages"
     # build dwm
-    # set IP of wazuh server
-    #
-    
-    xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
 
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
