@@ -111,8 +111,7 @@ sudo systemctl enable NetworkManager.service --now
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 
-if [[ ! -f $HOME/.zshrc ]]
-then
+if [ ! -f $HOME/.zshrc ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 fi
@@ -250,6 +249,7 @@ sudo powertop --auto-tune &> /dev/null
 echo "Checking for updates and removing unused packages"
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
+# Converts https to ssh
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
 
 echo ----------------------
