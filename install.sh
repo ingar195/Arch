@@ -105,8 +105,8 @@ fi
 sudo systemctl enable syslog-ng@default.service --now
 
 # Setup Network manager
-sudo systemctl disable systemd-networkd.service
-sudo systemctl disable iwd.service
+sudo systemctl disable systemd-networkd.service &> /dev/null
+sudo systemctl disable iwd.service &> /dev/null
 sudo systemctl enable NetworkManager.service --now
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
