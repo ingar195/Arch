@@ -198,6 +198,10 @@ else
     
     echo "Updating dotfiles"
     dotfiles pull
+    if [ $? -ne 0 ]; then
+        sudo rm -rf .dotfiles
+        git clone --bare $git_url $HOME/.dotfiles
+    fi
 fi
 
 # Create folders for filemanager
