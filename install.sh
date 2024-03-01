@@ -188,9 +188,14 @@ fi
 if [[ ! -d $HOME/.dotfiles/ ]]
 then
     echo "Did not find .dotfiles, so will check them out again"
-    git clone --bare $git_url $HOME/.dotfiles &> /dev/null
-    dotfiles checkout -f
+    git clone --bare $git_url $HOME/.dotfiles 
+    dotfiles checkout -f || echo "Dotfiles checkout failed."
+    if [ $? -ne 0 ]; then
+        sudo rm -rf .dotfiles
+        git clone --bare $git_url $HOME/.dotfiles
+    fi
 else
+    
     echo "Updating dotfiles"
     dotfiles pull
 fi
