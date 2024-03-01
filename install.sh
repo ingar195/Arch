@@ -42,7 +42,7 @@ install_packages() {
     while IFS= read -r package; do
         # start_time=$(date +%s)
         # Check is package is already installed
-        if paru -Qs "$package" &> /dev/null; then
+        if [ ! -z "$package" ] && paru -Qs "$package" &> /dev/null; then
             echo "INFO: $package is already installed" >> log.log
             continue
         fi
