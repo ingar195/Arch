@@ -142,10 +142,6 @@ if [ $USER = fw ]; then
 
     install_packages $USER"_packages"
     # build dwm
-    # set IP of wazuh server
-    #
-    
-    xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
 
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
