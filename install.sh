@@ -140,9 +140,7 @@ if [ $USER = fw ]; then
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
 
-    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server qemu-full qelectrotech neovim microsoft-edge-stable-bin libva-intel-driver dmenu prusa-slicer xidlehook xfce4-settings wazuh-agent systemd-resolvconf
-
-    # run daemon xfsettingsd
+    install_packages $USER"_packages"
     # build dwm
     # set IP of wazuh server
     #
