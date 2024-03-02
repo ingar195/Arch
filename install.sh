@@ -203,7 +203,7 @@ else
         if [ $? -ne 0 ]; then
             echo "Dotfiles pull failed. retrying..."
             sudo rm -rf .dotfiles
-            git clone --bare $git_url $HOME/.dotfiles`
+            git clone --bare $git_url $HOME/.dotfiles
         else
             echo "Dotfiles updated"
         fi
