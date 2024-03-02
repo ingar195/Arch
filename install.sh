@@ -266,3 +266,5 @@ sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
 echo ----------------------
 echo "Please reboot your PC"
 echo ----------------------
+
+sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
