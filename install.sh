@@ -198,11 +198,14 @@ then
 else
     
     echo "Updating dotfiles"
-    dotfiles pull || echo "ERROR: dotfiles pull failed"
-    if [ $? -ne 0 ]; then
-        echo "Dotfiles pull failed. retrying..."
-        sudo rm -rf .dotfiles
-        git clone --bare $git_url $HOME/.dotfiles
+    if [ ! -d $HOME/.dotfiles/ ]; then
+        dotfiles pull || echo "ERROR: dotfiles pull failed"
+        echo $?
+        if [ $? -ne 0 ]; then
+            echo "Dotfiles pull failed. retrying..."
+            sudo rm -rf .dotfiles
+            git clone --bare $git_url $HOME/.dotfiles
+        fi
     fi
 fi
 
