@@ -192,7 +192,7 @@ then
     dotfiles checkout -f || echo "Dotfiles checkout failed."
     if [ $? -ne 0 ]; then
         echo "Dotfiles pull failed. retrying..."
-        sudo rm -rf $HOME.dotfiles
+        sudo rm -rf $HOME/.dotfiles
         git clone --bare $git_url $HOME/.dotfiles
     else
         echo "Dotfiles Successfully checked out."
@@ -204,7 +204,7 @@ else
     dotfiles pull
     if [ $? -ne 0 ]; then
         echo "Dotfiles pull failed. retrying..."
-        sudo rm -rf $HOME.dotfiles
+        sudo rm -rf $HOME/.dotfiles
         git clone --bare $git_url $HOME/.dotfiles
     else
         echo "Dotfiles updated"
