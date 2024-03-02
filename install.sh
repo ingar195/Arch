@@ -199,8 +199,7 @@ else
     
     echo "Updating dotfiles"
     if [ ! -d $HOME/.dotfiles/ ]; then
-        dotfiles pull || echo "ERROR: dotfiles pull failed"
-        echo $?
+        dotfiles pull
         if [ $? -ne 0 ]; then
             echo "Dotfiles pull failed. retrying..."
             sudo rm -rf .dotfiles
