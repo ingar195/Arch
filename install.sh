@@ -191,14 +191,16 @@ then
     git clone --bare $git_url $HOME/.dotfiles 
     dotfiles checkout -f || echo "Dotfiles checkout failed."
     if [ $? -ne 0 ]; then
+        echo "Dotfiles checkout failed."
         sudo rm -rf .dotfiles
         git clone --bare $git_url $HOME/.dotfiles
     fi
 else
     
     echo "Updating dotfiles"
-    dotfiles pull
+    dotfiles pull || echo "ERROR: dotfiles pull failed"
     if [ $? -ne 0 ]; then
+        echo "Dotfiles pull failed. retrying..."
         sudo rm -rf .dotfiles
         git clone --bare $git_url $HOME/.dotfiles
     fi
