@@ -13,5 +13,6 @@ tlp-rdw
 papirus-icon-theme
 arc-gtk-theme
 picom
-polybar
+ttf-nerd-fonts-symbols-common
 ttf-nerd-fonts-symbols
+polybar
