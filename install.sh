@@ -161,6 +161,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 
+    sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
     
