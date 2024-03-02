@@ -201,15 +201,7 @@ else
     
     echo "Updating dotfiles"
     
-    dotfiles pull
-    if [ $? -ne 0 ]; then
-        echo "Dotfiles pull failed. retrying..."
-        sudo rm -rf $HOME/.dotfiles
-        git clone --bare $git_url $HOME/.dotfiles
-    else
-        echo "Dotfiles updated"
-    fi
-    
+    dotfiles pull || echo "ERROR: Dotfiles pull failed."    
 fi
 
 # Create folders for filemanager
