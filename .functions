@@ -1,10 +1,10 @@
 function install() {
-    sudo apt install "$1" -y
+    paru "$1"
 }
 function uninstall() {
-    sudo apt purge "$1" -y
+   paru "$1" -Rns
 }
 function update() {
-    sudo apt update -y
-    sudo apt upgrade -y
+    paru -Qdtq
+    paru --noconfirm  -Rs
 }
