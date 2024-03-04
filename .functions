@@ -5,6 +5,5 @@ function uninstall() {
    paru "$1" -Rns
 }
 function update() {
-    paru -Qdtq
-    paru --noconfirm  -Rs
+    paru -Syu
 }
