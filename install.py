@@ -81,7 +81,10 @@ def add_to_group(group, user):
 
 
 def edit_file(file_path, org, new, sudo=False):
+    org = org.replace("/", "\/")
+    new = new.replace("/", "\/")
     if sudo:
+        logging.debug("Running as sudo")
         if run_program(f"sudo test -f {file_path}") == 0:
             logging.debug(f"File {file_path} does exist")
         else:
@@ -184,7 +187,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
         datefmt='%d-%m-%Y:%H:%M:%S',
-        level="INFO", # 10 = DEBUG, 5 = TRACE
+        level="DEBUG", # 10 = DEBUG, 5 = TRACE
         handlers=[
             logging.FileHandler("installer.log"),
             logging.StreamHandler()
