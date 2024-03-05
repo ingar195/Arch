@@ -73,7 +73,7 @@ def add_to_group(group, user):
     if type(group) is not list:
         group = [group]
     for g in group:
-        if run_program(f"groups {user} | grep '{g}'") != 0:
+        if run_program(f"groups {user} | grep '{g}'", ignore_error=True) != 0:
             logging.debug(f"Adding {user} to {g}")
             run_program(f"sudo gpasswd -a {user} {g}")
 
