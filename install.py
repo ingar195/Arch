@@ -167,6 +167,16 @@ def create_dir(dir_path, sudo=False):
         logging.info(f"Creating directory {dir_path}")
 
 
+def delete(file_path):
+    if file_exists(file_path):
+        if os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+        else:
+            os.remove(file_path)
+    else:
+        logging.debug(f"File {file_path} does not exist")
+
+
 if __name__ == "__main__":
     TRACE = 5  # Custom log level value for TRACE
     logging.addLevelName(TRACE, "TRACE")
@@ -297,8 +307,8 @@ if __name__ == "__main__":
         create_dir(os.path.join(home_dir, "workspace"))
 
         if not file_exists(os.path.join(home_dir, ".dotfiles/config")):
-            os.remove(os.path.join(home_dir, ".config/i3/config"))
-            os.remove(os.path.join(home_dir, ".config/polybar"))
+            delete(os.path.join(home_dir, ".config/i3"))
+            delete(os.path.join(home_dir, ".config/polybar"))
 
     if not file_exists(os.path.join(home_dir, ".dotfiles/config")):
         # Clone dotfiles
