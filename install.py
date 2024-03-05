@@ -312,7 +312,7 @@ if __name__ == "__main__":
 
     if not file_exists(os.path.join(home_dir, ".dotfiles/config")):
         # Clone dotfiles
-        run_program(f"git clone --bare {dotfiles_url}")
+        run_program(f"git clone --bare {dotfiles_url} {os.path.join(home_dir, '.dotfiles')}")
     
     # Create folders for filemanager
     create_dir(os.path.join(home_dir, "Desktop"))
