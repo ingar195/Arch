@@ -101,7 +101,11 @@ def edit_file(file_path, org, new, sudo=False):
     logging.debug(f"Editing {file_path} from {org} to {new}")
     run_program(command)
     if in_file(file_path, new, sudo=sudo):
+        logging.debug(f"Successfully edited {file_path} from {org} to {new}")
         return True
+    else:
+        logging.error(f"Failed to edit {file_path} from {org} to {new}")
+        return False
     
 
 
