@@ -212,7 +212,7 @@ if __name__ == "__main__":
     
     # git user setup
         
-    if run_program("paru --version") != 0:
+    if run_program("paru --version", ignore_error=True) != 0:
         logging.info("Installing paru")
         run_program("git clone https://aur.archlinux.org/paru.git")
         run_program("cd paru && makepkg -si --noconfirm")
