@@ -100,6 +100,9 @@ def edit_file(file_path, org, new, sudo=False):
         return True
     logging.debug(f"Editing {file_path} from {org} to {new}")
     run_program(command)
+    if in_file(file_path, new, sudo=sudo):
+        return True
+    
 
 
 def add_to_file(file_path, content, sudo=False, create=False):
