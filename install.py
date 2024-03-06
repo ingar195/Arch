@@ -259,7 +259,8 @@ if __name__ == "__main__":
 
     edit_file("/etc/paru.conf", "#BottomUp", "BottomUp", sudo=True)
     edit_file("/etc/paru.conf", "#SudoLoop", "SudoLoop", sudo=True)
-    edit_file("/etc/paru.conf", "#Color", "Color", sudo=True)
+    add_to_file("/etc/paru.conf", "Color", sudo=True)
+    # edit_file("/etc/paru.conf", "#Color", "Color", sudo=True)
 
 
     install_packages(file_to_list("packages"))
