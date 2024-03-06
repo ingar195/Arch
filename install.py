@@ -18,6 +18,8 @@ def install_packages(packages, pacman=False, code=False):
         packages = [packages]
 
     for package in packages:
+        if package == "":
+            continue
         if run_program(f"pacman -Qs {package} | grep -q local/{package}", ignore_error= True) == 0:
             logging.debug(f"Skipping {package}, already installed")
             continue
