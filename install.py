@@ -243,13 +243,13 @@ if __name__ == "__main__":
     if not file_exists(file_path):
         run_program("ssh-keygen -m PEM -N '' -f ~/.ssh/id_rsa")
     
-    theme_settgins = [
+    theme_settings = [
         'gsettings set org.gnome.desktop.interface color-scheme prefer-dark',
         'gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"',
         'gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false',
         'xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"'
     ]
-    run_program(theme_settgins)
+    run_program(theme_settings)
     edit_file(os.path.join(home_dir, ".config/teamviewer/client.conf"), "ColorScheme = 1", "ColorScheme = 2")
 
     reboot_required = add_to_file("/etc/environment", "GTK_THEME=Adwaita-dark", sudo=True)
@@ -324,7 +324,7 @@ if __name__ == "__main__":
         # Clone dotfiles
         run_program(f"git clone --bare {dotfiles_url} {os.path.join(home_dir, '.dotfiles')}")
     
-    # Create folders for filemanager
+    # Create folders for file manager
     create_dir(os.path.join(home_dir, "Desktop"))
     create_dir(os.path.join(home_dir, "Pictures"))
     create_dir(os.path.join(home_dir, "Downloads")) 
