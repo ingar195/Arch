@@ -259,8 +259,7 @@ if __name__ == "__main__":
 
     edit_file("/etc/paru.conf", "#BottomUp", "BottomUp", sudo=True)
     edit_file("/etc/paru.conf", "#SudoLoop", "SudoLoop", sudo=True)
-    add_to_file("/etc/paru.conf", "Color", sudo=True)
-    # edit_file("/etc/paru.conf", "#Color", "Color", sudo=True)
+    edit_file("/etc/pacman.conf", "#Color", "Color", sudo=True)
 
 
     install_packages(file_to_list("packages"))
@@ -306,6 +305,7 @@ if __name__ == "__main__":
 
     service("wazuh-agent", enable=True)
 
+    # This gives false positive
     edit_file("/var/ossec/etc/ossec.conf", "MANAGER_IP", "213.161.247.227", sudo=True)
 
     if user == "fw":
