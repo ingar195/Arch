@@ -179,10 +179,15 @@ def create_dir(dir_path, sudo=False):
 
 def delete(file_path):
     if file_exists(file_path):
+        logging.info(f"Deleting {file_path}")
         if os.path.isdir(file_path):
             shutil.rmtree(file_path)
         else:
             os.remove(file_path)
+        if not file_exists(file_path):
+            logging.info(f"Deleted {file_path}")
+        else:
+            logging.error(f"Failed to delete {file_path}")
     else:
         logging.debug(f"File {file_path} does not exist")
 
