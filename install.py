@@ -86,6 +86,15 @@ def add_to_group(group, user):
 
     return True
 
+def download_file(url, file_path, sudo=False):
+    if file_exists(file_path):
+        logging.debug(f"Skipping download of {file_path}, already exists")
+        return True
+    logging.info(f"Downloading {url} to {file_path}")
+    command = f"curl -L {url} -o {file_path}"
+    if sudo:
+        command = f"sudo {command}"
+    return run_program(command) == 0
 
 def edit_file(file_path, org, new, sudo=False):
     org = org.replace("/", "\/")
@@ -310,6 +319,11 @@ if __name__ == "__main__":
 
     elif user == "user" or user == "ingar":
         dotfiles_url = "https://github.com/ingar195/.dotfiles.git"
+
+        download_file("https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/NerdFontsSymbolsOnly/SymbolsNerdFontMono-Regular.ttf", 
+                    "/usr/share/fonts/TTF/SymbolsNerdFontMono-Regular.ttf")
+        download_file("https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/NerdFontsSymbolsOnly/SymbolsNerdFont-Regular.ttf", 
+                    "/usr/share/fonts/TTF/SymbolsNerdFont-Regular.ttf")
 
         # Power Save
         edit_file('/etc/systemd/logind.conf', '#HandleLidSwitch=suspend', 'HandleLidSwitch=suspend', sudo=True)
