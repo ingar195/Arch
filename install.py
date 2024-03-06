@@ -58,10 +58,15 @@ def file_exists(file_path):
     return os.path.exists(file_path)
 
 
-def in_file(file_path, string):
+def in_file(file_path, string, sudo=False):
     if not file_exists(file_path):
         return False
-
+    if sudo:
+        if run_program(f"sudo grep -q {string} {file_path}", ignore_error=True) == 0:
+            return True
+        else:
+            logging.debug(f"String {string} not found in {file_path}")
+            return False
     with open(file_path, "r") as file:
         for line in file:
             if string in line:
@@ -100,7 +105,7 @@ def edit_file(file_path, org, new, sudo=False):
         return True
     logging.debug(f"Editing {file_path} from {org} to {new}")
     run_program(command)
-    if in_file(file_path, new, sudo=sudo):
+    if in_file(file_path, new, sudo):
         logging.debug(f"Successfully edited {file_path} from {org} to {new}")
         return True
     else:
