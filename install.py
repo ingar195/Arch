@@ -145,7 +145,7 @@ def add_to_file(file_path, content, sudo=False, create=False):
         logging.debug(f"Skipping {file_path}, already like this")
         return True
     if sudo:
-        command = f"sudo echo '{content}' | sudo tee {file_path}"
+        command = f"sudo echo '{content}' | sudo tee -a {file_path}"
     else:
         command = f"echo '{content}' >> {file_path}"
     logging.debug(f"Adding {content} to {file_path}")
