@@ -239,7 +239,7 @@ if __name__ == "__main__":
 
     file_name = os.path.join(home_dir, ".zshrc")
     if not in_file(file_name, "source $HOME/.config/zsh/.work"):
-        response = input("Do you want to add work to your zshrc? (y/n): ")
+        response = input("Do you want to add work to your zshrc? (y/N): ")
         if response.lower() == "y":
             to_file[file_name] = "source $HOME/.config/zsh/.work"
     
