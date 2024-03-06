@@ -116,9 +116,9 @@ def edit_file(file_path, org, new, sudo=False):
     command = f"sed -i 's/{org}/{new}/g' {file_path}"
     if sudo:
         command = f"sudo {command}"
-    if in_file(file_path, new):
-        logging.debug(f"Skipping {file_path}, already like this")
-        return True
+    # if in_file(file_path, new):
+    #     logging.debug(f"Skipping {file_path}, already like this")
+    #     return True
     logging.debug(f"Editing {file_path} from {org} to {new}")
     run_program(command)
     if in_file(file_path, new, sudo):
