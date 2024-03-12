@@ -1,3 +1,27 @@
+# Define commandline options
+optstring="d"
+while getopts "$optstring" optchar; do
+  case $optchar in
+    d)
+      DEBUG=true
+      ;;
+    ?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Logg messages should be in format    logging INFO MESSAGE
+logging(){
+  if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
+    echo "$1: $2" | tee log.log >2 
+  else
+    echo "$1: $2" | tee log.log
+  fi
+}
+
+
 # Update pacman database
 sudo pacman --noconfirm -Sy
 sudo pacman -S --noconfirm --needed base-devel git rust &> /dev/null
