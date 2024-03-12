@@ -58,7 +58,7 @@ install_code_packages() {
             logger INFO "$package is already installed"
             continue
         fi
-        code --install-extension "$package" || logger ERROR "failed to install $package"
+        code --install-extension "$package" &>/dev/null || logger ERROR "failed to install $package"
     done < "$filename"
 }
 
