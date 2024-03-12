@@ -130,15 +130,28 @@ sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
 
 # user defaults
 if [ $USER = fw ]; then
+    # Remember where we where..
+    cwd=$(pwd)
+    
+    # Define the dotfiles repo
     git_url="https://github.com/frodus/dotfiles.git"
 
-    # Add Teamviewer config to make it start
+    # Add Teamviewer config to make it start without a loginmanager
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
 
+    # Install my packages
     install_packages $USER"_packages"
-    # build dwm
 
+    # Build my dispay manager
+    git clone git@github.com:frodus/dwm.git $HOME/repo/dwm
+    cd $HOME/repo/dwm
+    git checkout fw-modification
+    sudo rm config.h
+    make && sudo make install
+
+    # Get back to where we started from
+    cd $cwd
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
@@ -262,6 +275,9 @@ paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
 # Converts https to ssh
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+
+# Start wazuh-agent
+sudo systemctl enable --now wazuh-agent
 
 echo ----------------------
 echo "Please reboot your PC"
