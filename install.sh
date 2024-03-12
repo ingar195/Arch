@@ -91,6 +91,12 @@ replace_or_append() {
   fi
 }
 
+
+if [[ -n "$SUDO_USER" || -n "$SUDO_UID" ]]; then
+    logger ERROR "You are not allowed to run this script as sudo"
+    exit 1
+fi
+
 # Update pacman database
 sudo pacman --noconfirm -Syu
 sudo pacman -S --noconfirm --needed base-devel git rust &> /dev/null
