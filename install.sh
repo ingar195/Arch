@@ -12,6 +12,7 @@ while getopts "$optstring" optchar; do
   esac
 done
 
+
 # Logg messages should be in format    logging INFO MESSAGE
 logging(){
   if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
@@ -21,6 +22,81 @@ logging(){
   fi
 }
 
+
+# Function to add source to .zshrc if not already there
+add_source_to_zshrc() {
+    if [[ -f $HOME/.zshrc ]]; then
+        if ! grep -Fxq "source $1" $HOME/.zshrc; then
+            logging INFO "Adding 'source $1 to .zshrc'"
+            echo "source $1" >> $HOME/.zshrc
+        fi
+    fi
+}
+
+
+# Install Packages from file
+install_packages() {
+    echo "Installing" $1
+    local filename=$1
+    while IFS= read -r package; do
+        # start_time=$(date +%s)
+        # Check is package is already installed
+        if [ -n "$(paru -Qs "$package")" ]; then
+            echo "INFO: $package is already installed" >> log.log
+            continue
+        fi
+        echo "--------------------------------Installing $package"
+        paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> error.log
+        # end_time=$(date +%s)
+        # duration=$((end_time - start_time))
+        # echo "INFO: Installation of $package took $duration sec" >> paru.log
+    done < "$filename"
+}
+
+
+install_code_packages() {
+    echo "Installing code extensions"
+    local filename=$1
+    local installed_extensions=$(code --list-extensions)
+    while IFS= read -r package; do
+        if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
+            logger INFO "$package is already installed"
+            continue
+        fi
+        code --install-extension "$package" || logger ERROR "failed to install $package"
+    done < "$filename"
+}
+
+
+replace_or_append() {
+  local file="$1"  # Target file
+  local target="$2" # Line to replace (target string)
+  local replacement="$3" # Replacement line
+  
+  if [ -z $4 ]; then
+    local sudo=""
+  else
+    local sudo="sudo"
+  fi
+
+  echo $sudo
+
+  if [ ! -f $file ]; then
+    $sudo touch $file
+    logger INFO "Created file: $file"
+  fi
+
+  # Use grep to check if target exists (avoids unnecessary sed invocation)
+  if $sudo grep -q "^$target\$" "$file"; then
+    # Perform in-place replacement with sed (consider using a temporary file for safety)
+    $sudo sed -i "/^$target$/s//$replacement/" "$file"
+    logger INFO "Changed line in file: $file"
+  else
+    # Append replacement if target not found
+    $sudo sh -c "echo $replacement >> $file"
+    logger INFO "Added line in file: $file"
+  fi
+}
 
 # Update pacman database
 sudo pacman --noconfirm -Sy
@@ -56,44 +132,12 @@ if ! command -v paru --help &> /dev/null; then
     sudo rm -r paru-bin
 fi
 
-echo "Setting up paru"
+# Paru settings
 sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
 sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
 sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
-# Install Packages from file
-install_packages() {
-    echo "Installing" $1
-    local filename=$1
-    while IFS= read -r package; do
-        # start_time=$(date +%s)
-        # Check is package is already installed
-        if [ -n "$(paru -Qs "$package")" ]; then
-            echo "INFO: $package is already installed" >> log.log
-            continue
-        fi
-        echo "--------------------------------Installing $package"
-        paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> error.log
-        # end_time=$(date +%s)
-        # duration=$((end_time - start_time))
-        # echo "INFO: Installation of $package took $duration sec" >> paru.log
-    done < "$filename"
-}
-
 install_packages "packages"
-
-install_code_packages() {
-    echo "Installing code extensions"
-    local filename=$1
-    local installed_extensions=$(code --list-extensions)
-    while IFS= read -r package; do
-        if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
-            echo "INFO: $package is already installed" >> log.log
-            continue
-        fi
-        code --install-extension  "$package" || echo " failed to install $package" >> error.log
-    done < "$filename"
-}
 
 install_code_packages "code_packages"
 
@@ -101,17 +145,17 @@ install_code_packages "code_packages"
 if [[ ! -f $HOME/.ssh/id_rsa ]]
 then
     ssh-keygen -m PEM -N '' -f ~/.ssh/id_rsa
+    logger WARNING "Did not find SSH key, and created a new one"
 fi
 
 sudo timedatectl set-timezone Europe/Oslo
 
 # Set theme
-echo "Setting up theme"
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
-sed -i 's/ColorScheme = 1/ColorScheme = 2/g' /home/$USER/.config/teamviewer/client.conf 
+replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
     echo "GTK_THEME=Adwaita-dark" | sudo tee -a /etc/environment
@@ -123,16 +167,15 @@ echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/bright
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
 
 # Enable services
-if ! systemctl is-active --quiet teamviewerd  ; then
-    sudo systemctl enable teamviewerd.service --now
-fi
+sudo systemctl enable teamviewerd.service --now
 
 # Setup syslog-ng
 sudo systemctl enable syslog-ng@default.service --now
 
-# Setup Network manager
+# Disable iwd if archinstaller has copied ios settings
 sudo systemctl disable systemd-networkd.service &> /dev/null
 sudo systemctl disable iwd.service &> /dev/null
+# Setup Network manager
 sudo systemctl enable NetworkManager.service --now
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
@@ -140,17 +183,18 @@ sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-n
 
 #Docker
 sudo systemctl enable docker.service acpid.service --now
-sudo usermod -aG docker $USER
-
-# Virt Manager
-sudo usermod -G libvirt -a $USER
-sudo systemctl enable libvirtd.service
-sudo systemctl start libvirtd.service
-## This command does not work, and we do not know the reason or a workaround yet...
-#sudo virsh net-autostart default
 
 # Wazuh-agent
 sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
+
+# Start wazuh-agent
+sudo systemctl enable --now wazuh-agent | logger ERROR "Wazuh did not start..."
+
+# Power Save
+sudo sed -i 's/#HandleLidSwitch=suspend/HandleLidSwitch=suspend/g' /etc/systemd/logind.conf
+sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf
+sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
+sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
 
 # user defaults
 if [ $USER = fw ]; then
@@ -172,19 +216,14 @@ if [ $USER = fw ]; then
     cd $HOME/repo/dwm
     git checkout fw-modification
     sudo rm config.h
-    make && sudo make install
+    make && sudo make install 
 
     # Get back to where we started from
     cd $cwd
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
-    
-    # Power Save
-    sudo sed -i 's/#HandleLidSwitch=suspend/HandleLidSwitch=suspend/g' /etc/systemd/logind.conf
-    sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf
-    sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
-    sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
+
     install_packages "user_packages"
 
     # Greeter
@@ -198,6 +237,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 
+    ## REPLACE!!!
     sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
@@ -207,9 +247,6 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
         mkdir .config/polybar
     fi
 
-elif [ $USER = screen ]; then
-    # Autostart script for web kiosk
-    echo Screen 
 else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
@@ -218,41 +255,36 @@ fi
 # Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
 
-# Create gitingore
-if [[ ! -f $HOME/.gitignore ]]
-then
-    echo ".dotfiles" > $HOME/.gitignore
-fi
 if [[ ! -d $HOME/.dotfiles/ ]]
 then
-    echo "Did not find .dotfiles, so will check them out again"
+    logging INFO "Did not find .dotfiles, so will check them out again"
     git clone --bare $git_url $HOME/.dotfiles 
     dotfiles checkout -f || echo "Dotfiles checkout failed."
     if [ $? -ne 0 ]; then
-        echo "Dotfiles pull failed. retrying..."
+        logger WARNING "Dotfiles pull failed. retrying..."
         sudo rm -rf $HOME/.dotfiles
         git clone --bare $git_url $HOME/.dotfiles
     else
-        echo "Dotfiles Successfully checked out."
+        logger INFO "Dotfiles Successfully checked out."
     fi
 else
     
-    echo "Updating dotfiles"
+    logger INFO "Updating dotfiles"
     
-    dotfiles pull || echo "ERROR: Dotfiles pull failed."    
+    dotfiles pull || logger ERROR "Dotfiles pull failed."    
 fi
 
 # Create folders for filemanager
 mkdir -p $HOME/Downloads &> /dev/null
 mkdir -p $HOME/Desktop &> /dev/null
-mkdir -P $HOME/Pictures &> /dev/null
-mkdir -P $HOME/.config/wireguard &> /dev/null
+mkdir -p $HOME/Pictures &> /dev/null
+mkdir -p $HOME/.config/wireguard &> /dev/null
 
-# not working
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
 fi
 
+## FIX ME! The check is not good....
 if [ ! -f $HOME/.zshrc ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
@@ -265,17 +297,6 @@ mkdir -p $zsh_config_path
 
 cp .aliases $zsh_config_path/
 cp .functions $zsh_config_path/
-
-
-# Function to add source to .zshrc if not already there
-add_source_to_zshrc() {
-    if [[ -f $HOME/.zshrc ]]; then
-        if ! grep -Fxq "source $1" $HOME/.zshrc; then
-            echo "Adding 'source $1 to .zshrc'"
-            echo "source $1" >> $HOME/.zshrc
-        fi
-    fi
-}
 
 # Add sources to .zshrc if not already there
 echo "Adding sources to .zshrc"
@@ -293,15 +314,12 @@ sudo updatedb
 echo "Setting up power settings"
 sudo powertop --auto-tune &> /dev/null
 
-# Install updates and cleanup unused 
-echo "Checking for updates and removing unused packages"
-paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
+# Cleanup unused packages 
+paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
 
-# Start wazuh-agent
-sudo systemctl enable --now wazuh-agent
 
 echo ----------------------
 echo "Please reboot your PC"
