@@ -38,7 +38,7 @@ add_source_to_zshrc() {
 install_packages() {
     echo "Installing" $1
     local filename=$1
-    while IFS= read -r package; do
+    while IFS= read -r package || [[ -n "$package" ]]; do
         # start_time=$(date +%s)
         # Check is package is already installed
         if [ -n "$(paru -Qs "$package")" ]; then
@@ -58,7 +58,7 @@ install_code_packages() {
     logging INFO "Installing code extensions"
     local filename=$1
     local installed_extensions=$(code --list-extensions)
-    while IFS= read -r package; do
+    while IFS= read -r package || [[ -n "$package" ]]; do
         if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
             logger INFO "$package is already installed"
             continue
