@@ -7,6 +7,7 @@ autorandr
 bc
 brightnessctl
 can-utils
+curl
 dmidecode
 docker
 dunst
@@ -18,8 +19,9 @@ gnu-netcat
 google-chrome
 gparted
 kicad
-man
+man-db
 meld
+mlocate
 nautilus
 networkmanager
 network-manager-applet
@@ -28,6 +30,7 @@ ntfs-3g
 numlockx
 pavucontrol
 powertop
+p7zip
 qbittorrent
 rclone
 remmina
@@ -51,3 +54,4 @@ xfce4-settings
 xorg-xkill
 numix-gtk-theme-git
 wireguard-tools
+wazuh-agent

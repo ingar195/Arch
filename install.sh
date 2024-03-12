@@ -19,7 +19,9 @@ if [ -z "$(git config user.name)" ]; then
 fi
 
 # Add user to uucp group to allow access to serial ports
-sudo gpasswd -a $USER uucp
+if ! groups $USER | grep &>/dev/null '\buucp\b'; then
+    sudo gpasswd -a $USER uucp
+fi
 
 # Install Paru helper
 if ! command -v paru --help &> /dev/null; then
@@ -37,12 +39,12 @@ sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 # Install Packages from file
 install_packages() {
-    echo "Installing packages"
+    echo "Installing" $1
     local filename=$1
     while IFS= read -r package; do
         # start_time=$(date +%s)
         # Check is package is already installed
-        if paru -Qs "$package" &> /dev/null; then
+        if [ -n "$(paru -Qs "$package")" ]; then
             echo "INFO: $package is already installed" >> log.log
             continue
         fi
@@ -59,8 +61,9 @@ install_packages "packages"
 install_code_packages() {
     echo "Installing code extensions"
     local filename=$1
+    local installed_extensions=$(code --list-extensions)
     while IFS= read -r package; do
-        if code --list-extensions | grep -i "$package" &> /dev/null; then
+        if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
             echo "INFO: $package is already installed" >> log.log
             continue
         fi
@@ -104,19 +107,12 @@ fi
 sudo systemctl enable syslog-ng@default.service --now
 
 # Setup Network manager
-sudo systemctl disable systemd-networkd.service
-sudo systemctl disable iwd.service
+sudo systemctl disable systemd-networkd.service &> /dev/null
+sudo systemctl disable iwd.service &> /dev/null
 sudo systemctl enable NetworkManager.service --now
 
 sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
-
-if [[ ! -f $HOME/.zshrc ]]
-then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
-fi
-
 
 #Docker
 sudo systemctl enable docker.service acpid.service --now
@@ -129,23 +125,33 @@ sudo systemctl start libvirtd.service
 ## This command does not work, and we do not know the reason or a workaround yet...
 #sudo virsh net-autostart default
 
+# Wazuh-agent
+sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
+
 # user defaults
 if [ $USER = fw ]; then
+    # Remember where we where..
+    cwd=$(pwd)
+    
+    # Define the dotfiles repo
     git_url="https://github.com/frodus/dotfiles.git"
 
-# Add Teamviewer config to make it start
+    # Add Teamviewer config to make it start without a loginmanager
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     echo -e '[Service] \nEnvironment=XDG_SESSION_TYPE=x11' | sudo tee /etc/systemd/system/getty@tty1.service.d/getty@tty1.service-drop-in.conf
 
-    paru -S --noconfirm --needed dwm st xorg-xinit xorg-server qemu-full qelectrotech neovim microsoft-edge-stable-bin libva-intel-driver dmenu prusa-slicer xidlehook xfce4-settings wazuh-agent systemd-resolvconf
+    # Install my packages
+    install_packages $USER"_packages"
 
-    # run daemon xfsettingsd
-    # build dwm
-    # set IP of wazuh server
-    #
-    
-    xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+    # Build my dispay manager
+    git clone git@github.com:frodus/dwm.git $HOME/repo/dwm
+    cd $HOME/repo/dwm
+    git checkout fw-modification
+    sudo rm config.h
+    make && sudo make install
 
+    # Get back to where we started from
+    cd $cwd
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
@@ -168,10 +174,14 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
     sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
 
+    sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
     
-
+    if [ ! -f "$HOME/.dotfiles/config" ];then
+        rm .config/i3/config
+        mkdir .config/polybar
+    fi
 
 elif [ $USER = screen ]; then
     # Autostart script for web kiosk
@@ -180,10 +190,6 @@ else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
 
-if [ ! -f "$HOME/.dotfiles/config" ];then
-    rm .config/i3/config
-    mkdir .config/polybar
-fi
 
 # Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
@@ -196,11 +202,20 @@ fi
 if [[ ! -d $HOME/.dotfiles/ ]]
 then
     echo "Did not find .dotfiles, so will check them out again"
-    git clone --bare $git_url $HOME/.dotfiles &> /dev/null
-    dotfiles checkout -f
+    git clone --bare $git_url $HOME/.dotfiles 
+    dotfiles checkout -f || echo "Dotfiles checkout failed."
+    if [ $? -ne 0 ]; then
+        echo "Dotfiles pull failed. retrying..."
+        sudo rm -rf $HOME/.dotfiles
+        git clone --bare $git_url $HOME/.dotfiles
+    else
+        echo "Dotfiles Successfully checked out."
+    fi
 else
+    
     echo "Updating dotfiles"
-    dotfiles pull
+    
+    dotfiles pull || echo "ERROR: Dotfiles pull failed."    
 fi
 
 # Create folders for filemanager
@@ -212,6 +227,11 @@ mkdir -P $HOME/.config/wireguard &> /dev/null
 # not working
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
+fi
+
+if [ ! -f $HOME/.zshrc ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 fi
 
 # Aliases and functions
@@ -242,6 +262,9 @@ if [[ $zsh_work == "y" ]]; then
     add_source_to_zshrc "$zsh_config_path/.work"
 fi
 
+# Update locate database
+sudo updatedb
+
 # Power settings
 echo "Setting up power settings"
 sudo powertop --auto-tune &> /dev/null
@@ -250,7 +273,11 @@ sudo powertop --auto-tune &> /dev/null
 echo "Checking for updates and removing unused packages"
 paru -Qdtq | paru --noconfirm  -Rs - &> /dev/null
 
+# Converts https to ssh
 sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+
+# Start wazuh-agent
+sudo systemctl enable --now wazuh-agent
 
 echo ----------------------
 echo "Please reboot your PC"
