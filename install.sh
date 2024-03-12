@@ -39,17 +39,12 @@ install_packages() {
     echo "Installing" $1
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
-        # start_time=$(date +%s)
-        # Check is package is already installed
         if [ -n "$(paru -Qs "$package")" ]; then
             echo "INFO: $package is already installed" >> log.log
             continue
         fi
         logging INFO "--------------------------------Installing $package"
         paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
-        # end_time=$(date +%s)
-        # duration=$((end_time - start_time))
-        # echo "INFO: Installation of $package took $duration sec" >> paru.log
     done < "$filename"
 }
 
