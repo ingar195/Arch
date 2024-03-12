@@ -45,8 +45,8 @@ install_packages() {
             echo "INFO: $package is already installed" >> log.log
             continue
         fi
-        echo "--------------------------------Installing $package"
-        paru -S --noconfirm --needed "$package" || echo "ERROR: $package" >> error.log
+        logging INFO "--------------------------------Installing $package"
+        paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
         # end_time=$(date +%s)
         # duration=$((end_time - start_time))
         # echo "INFO: Installation of $package took $duration sec" >> paru.log
@@ -55,7 +55,7 @@ install_packages() {
 
 
 install_code_packages() {
-    echo "Installing code extensions"
+    logging INFO "Installing code extensions"
     local filename=$1
     local installed_extensions=$(code --list-extensions)
     while IFS= read -r package; do
@@ -79,8 +79,6 @@ replace_or_append() {
     local sudo="sudo"
   fi
 
-  echo $sudo
-
   if [ ! -f $file ]; then
     $sudo touch $file
     logger INFO "Created file: $file"
@@ -99,7 +97,7 @@ replace_or_append() {
 }
 
 # Update pacman database
-sudo pacman --noconfirm -Sy
+sudo pacman --noconfirm -Syu
 sudo pacman -S --noconfirm --needed base-devel git rust &> /dev/null
 
 if [ -f "$HOME/.zshrc" ]; then
@@ -162,7 +160,6 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
 fi
 
 # Set Backlight permissions and monotor rules
-echo "Setting up backlight permissions and monitor rules"
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
 
@@ -216,7 +213,7 @@ if [ $USER = fw ]; then
     cd $HOME/repo/dwm
     git checkout fw-modification
     sudo rm config.h
-    make && sudo make install 
+    make &>/dev/null && sudo make install &>/dev/null
 
     # Get back to where we started from
     cd $cwd
@@ -299,7 +296,6 @@ cp .aliases $zsh_config_path/
 cp .functions $zsh_config_path/
 
 # Add sources to .zshrc if not already there
-echo "Adding sources to .zshrc"
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
 
@@ -311,7 +307,6 @@ fi
 sudo updatedb
 
 # Power settings
-echo "Setting up power settings"
 sudo powertop --auto-tune &> /dev/null
 
 # Cleanup unused packages 
