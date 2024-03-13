@@ -16,9 +16,9 @@ done
 # Logg messages should be in format    logging INFO MESSAGE
 logging(){
   if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
-    echo "$1: $2" | tee log.log >2 
+    echo "$1: $2" | tee -a log.log &> /dev/null
   else
-    echo "$1: $2" | tee log.log
+    echo "$1: $2" | tee -a log.log
   fi
 }
 
