@@ -83,9 +83,9 @@ replace_or_append() {
   fi
 
   # Use grep to check if target exists (avoids unnecessary sed invocation)
-  if $sudo grep -q "^$target\$" "$file"; then
+  if $sudo grep -q "^$target" "$file"; then
     # Perform in-place replacement with sed (consider using a temporary file for safety)
-    $sudo sed -i "/^$target$/s//$replacement/" "$file"
+    $sudo sed -i "/^$target/s//$replacement/" "$file"
     logger INFO "Changed line in file: $file"
   else
     # Append replacement if target not found
