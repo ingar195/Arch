@@ -157,6 +157,8 @@ gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+
+mkdir -p $HOME/.config/teamviewer &> /dev/null
 replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
@@ -287,11 +289,12 @@ mkdir -p $HOME/Desktop &> /dev/null
 mkdir -p $HOME/Pictures &> /dev/null
 mkdir -p $HOME/.config/wireguard &> /dev/null
 
+
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
 fi
 
-if [ ! -f $HOME/.zshrc ] || ! grep -q "ZSH_THEME" $HOME/.zshrc; then
+if [ ! -f $HOME/.oh-my-zsh/README.md ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     replace_or_append $HOME/.zshrc "ZSH_THEME=" "ZSH_THEME=\"agnoster\""
 fi
