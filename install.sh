@@ -224,16 +224,24 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
 
     install_packages "user_packages"
 
+    # TLP
+    systemctl enable tlp.service --now 
+    replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
+    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
+    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=performance" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
+
     # Greeter
-    sudo sed -i 's/#theme-name=/theme-name=Numix/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#icon-theme-name=/icon-theme-name=Papirus-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#background=/background=#2f343f/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#xft-dpi=/xft-dpi=261/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#icon-theme-name=" "icon-theme-name=Papirus-Dark" sudo
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#background=" "background=#2f343f" sudo
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#xft-dpi=" "xft-dpi=261" sudo
+
+    # Lightdm
     sudo systemctl enable lightdm
+
     # Dunst settings 
-    sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
-    sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
+    replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
+    replace_or_append /etc/dunst/dunstrc "notification_limit = 0" "notification_limit = 5" sudo
 
     ## REPLACE!!!
     sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
