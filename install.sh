@@ -291,10 +291,9 @@ if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
 fi
 
-## FIX ME! The check is not good....
-if [ ! -f $HOME/.zshrc ]; then
+if [ ! -f $HOME/.zshrc ] || ! grep -q "ZSH_THEME" $HOME/.zshrc; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
+    replace_or_append $HOME/.zshrc "ZSH_THEME=" "ZSH_THEME=\"agnoster\""
 fi
 
 # Aliases and functions
@@ -324,7 +323,7 @@ paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
 if [ -z $skip_convert ]; then
-    replace_or_append $HOME/.dotfiles/config "https://github.com/" "git@github.com:" sudo
+    sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
 else
     logging WARNING "Skipping conversion from https to ssh"
 fi
