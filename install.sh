@@ -1,10 +1,13 @@
 # Define commandline options
-optstring="d"
+optstring="d:s"
 while getopts "$optstring" optchar; do
   case $optchar in
     d)
       DEBUG=true
       ;;
+    s)
+        skip_convert=true
+        ;;
     ?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -154,6 +157,8 @@ gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+
+mkdir -p $HOME/.config/teamviewer &> /dev/null
 replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
@@ -228,19 +233,25 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
 
     install_packages "user_packages"
 
-    # Greeter
-    sudo sed -i 's/#theme-name=/theme-name=Numix/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#icon-theme-name=/icon-theme-name=Papirus-Dark/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#background=/background=#2f343f/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    sudo sed -i 's/#xft-dpi=/xft-dpi=261/g' /etc/lightdm/lightdm-gtk-greeter.conf
-    
-    sudo systemctl enable lightdm
-    # Dunst settings 
-    sudo sed -i 's/offset = 10x50/offset = 40x70/g' /etc/dunst/dunstrc
-    sudo sed -i 's/notification_limit = 0/notification_limit = 5/g' /etc/dunst/dunstrc
+    # TLP
+    sudo systemctl enable tlp.service --now 
+    replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
+    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
+    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=performance" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
 
-    ## REPLACE!!!
-    sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
+    # Greeter
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#icon-theme-name=" "icon-theme-name=Papirus-Dark" sudo
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#background=" "background=#2f343f" sudo
+    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#xft-dpi=" "xft-dpi=261" sudo
+
+    # Lightdm
+    sudo systemctl enable lightdm
+
+    # Dunst settings 
+    replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
+    replace_or_append /etc/dunst/dunstrc "notification_limit = 0" "notification_limit = 5" sudo
+
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
     
@@ -282,15 +293,14 @@ mkdir -p $HOME/Desktop &> /dev/null
 mkdir -p $HOME/Pictures &> /dev/null
 mkdir -p $HOME/.config/wireguard &> /dev/null
 
+
 if [ "$(echo $SHELL )" != "/bin/zsh" ]; then
     sudo chsh -s /bin/zsh $USER
 fi
 
-## FIX ME! The check is not good....
-if [ ! -f $HOME/.zshrc ]; then
+if [ ! -f $HOME/.oh-my-zsh/README.md ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     replace_or_append $HOME/.zshrc "ZSH_THEME=" "ZSH_THEME=\"agnoster\""
-    # sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 fi
 
 # Aliases and functions
@@ -319,8 +329,11 @@ sudo powertop --auto-tune &> /dev/null
 paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
-sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
-
+if [ -z $skip_convert ]; then
+    sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+else
+    logging WARNING "Skipping conversion from https to ssh"
+fi
 
 echo ----------------------
 echo "Please reboot your PC"
