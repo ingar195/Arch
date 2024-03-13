@@ -39,11 +39,11 @@ add_source_to_zshrc() {
 
 # Install Packages from file
 install_packages() {
-    echo "Installing" $1
+    logging DEBUG "Installing from $1"
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
         if [ -n "$(paru -Qs "$package")" ]; then
-            echo "INFO: $package is already installed" >> log.log
+            logging INFO "$package is already installed"
             continue
         fi
         logging INFO "--------------------------------Installing $package"
@@ -137,7 +137,7 @@ fi
 # Paru settings
 replace_or_append /etc/paru.conf "#BottomUp" "BottomUp" "sudo"
 replace_or_append /etc/paru.conf "#SudoLoop" "SudoLoop" "sudo"
-replace_or_append /etc/paru.conf "#Color" "Color" "sudo"
+replace_or_append /etc/pacman.conf "#Color" "Color" "sudo"
 
 install_packages "packages"
 
@@ -159,10 +159,12 @@ gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
 
 mkdir -p $HOME/.config/teamviewer &> /dev/null
+# not setting on fresh install
 replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
-    echo "GTK_THEME=Adwaita-dark" | sudo tee -a /etc/environment
+    replace_or_append /etc/environment "GTK_THEME=Adwaita-dark" "GTK_THEME=Adwaita-dark" sudo
+    # echo "GTK_THEME=Adwaita-dark" | sudo tee -a /etc/environment
 fi
 
 # Set Backlight permissions and monotor rules
@@ -192,7 +194,7 @@ replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouv
 sudo systemctl enable docker.service acpid.service --now
 
 # Wazuh-agent
-replace_or_append /etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
+replace_or_append /var/ossec/etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
 
 # Start wazuh-agent
 sudo systemctl enable --now wazuh-agent | logger ERROR "Wazuh did not start..."
@@ -200,7 +202,7 @@ sudo systemctl enable --now wazuh-agent | logger ERROR "Wazuh did not start..."
 # Power Save
 replace_or_append /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=suspend" sudo
 replace_or_append /etc/systemd/logind.conf "#IdleAction=ignore" "IdleAction=suspend" sudo
-replace_or_append /etc/systemd/logind.conf "#IdleActionSec=30min" "IdleActionSec=30min" sudo
+replace_or_append /etc/systemd/logind.conf "#IdleActionSec=30min" "IdleActionSec=10min" sudo
 replace_or_append /etc/systemd/logind.conf "#HoldoffTimeoutSec=30s" "HoldoffTimeoutSec=5s" sudo
 
 # user defaults
@@ -237,7 +239,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     sudo systemctl enable tlp.service --now 
     replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
     replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
-    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=performance" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
+    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=powersave" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
 
     # Greeter
     replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
@@ -250,7 +252,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
 
     # Dunst settings 
     replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
-    replace_or_append /etc/dunst/dunstrc "notification_limit = 0" "notification_limit = 5" sudo
+    replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
 
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
@@ -264,6 +266,7 @@ else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
 
+xdg-open
 
 # Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
@@ -272,7 +275,7 @@ if [[ ! -d $HOME/.dotfiles/ ]]
 then
     logging INFO "Did not find .dotfiles, so will check them out again"
     git clone --bare $git_url $HOME/.dotfiles 
-    dotfiles checkout -f || echo "Dotfiles checkout failed."
+    dotfiles checkout -f || logging ERROR "Dotfiles checkout failed."
     if [ $? -ne 0 ]; then
         logger WARNING "Dotfiles pull failed. retrying..."
         sudo rm -rf $HOME/.dotfiles
