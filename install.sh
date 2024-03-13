@@ -43,7 +43,7 @@ install_packages() {
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
         if [ -n "$(paru -Qs "$package")" ]; then
-            logging INFO "$package is already installed"
+            logging DEBUG "$package is already installed"
             continue
         fi
         logging INFO "--------------------------------Installing $package"
@@ -58,7 +58,7 @@ install_code_packages() {
     local installed_extensions=$(code --list-extensions)
     while IFS= read -r package || [[ -n "$package" ]]; do
         if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
-            logger INFO "$package is already installed"
+            logger DEBUG "$package is already installed"
             continue
         fi
         code --install-extension "$package" &>/dev/null || logger ERROR "failed to install $package"
@@ -265,8 +265,6 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
 else
     read -p "enter the https URL for you git bare repo : " git_url
 fi
-
-xdg-open
 
 # Tmp alias for installation only 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=/home/$USER'
