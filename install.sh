@@ -132,9 +132,9 @@ if ! command -v paru --help &> /dev/null; then
 fi
 
 # Paru settings
-sudo sed -i 's/#BottomUp/BottomUp/g' /etc/paru.conf
-sudo sed -i 's/#SudoLoop/SudoLoop/g' /etc/paru.conf
-sudo sed -i 's/#Color/Color/g' /etc/pacman.conf
+replace_or_append /etc/paru.conf "#BottomUp" "BottomUp" "sudo"
+replace_or_append /etc/paru.conf "#SudoLoop" "SudoLoop" "sudo"
+replace_or_append /etc/paru.conf "#Color" "Color" "sudo"
 
 install_packages "packages"
 
@@ -161,8 +161,10 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
 fi
 
 # Set Backlight permissions and monotor rules
-echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
-sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
+replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' sudo 
+#echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
+replace_or_append /etc/udev/rules.d/70-monitor.rules "" 'SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr"' sudo
+# sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
 
 # Enable services
 sudo systemctl enable teamviewerd.service --now
@@ -176,23 +178,25 @@ sudo systemctl disable iwd.service &> /dev/null
 # Setup Network manager
 sudo systemctl enable NetworkManager.service --now
 
-sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
-sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "blacklist nouveau" sudo
+# sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouveau modeset=0" sudo
+# sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 
 #Docker
 sudo systemctl enable docker.service acpid.service --now
 
 # Wazuh-agent
-sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
+replace_or_append /etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
 
 # Start wazuh-agent
 sudo systemctl enable --now wazuh-agent | logger ERROR "Wazuh did not start..."
 
 # Power Save
-sudo sed -i 's/#HandleLidSwitch=suspend/HandleLidSwitch=suspend/g' /etc/systemd/logind.conf
-sudo sed -i 's/#IdleAction=ignore/IdleAction=suspend/g' /etc/systemd/logind.conf
-sudo sed -i 's/#IdleActionSec=30min/IdleActionSec=30min/g' /etc/systemd/logind.conf
-sudo sed -i 's/#HoldoffTimeoutSec=30s/HoldoffTimeoutSec=5s/g' /etc/systemd/logind.conf
+replace_or_append /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=suspend" sudo
+replace_or_append /etc/systemd/logind.conf "#IdleAction=ignore" "IdleAction=suspend" sudo
+replace_or_append /etc/systemd/logind.conf "#IdleActionSec=30min" "IdleActionSec=30min" sudo
+replace_or_append /etc/systemd/logind.conf "#HoldoffTimeoutSec=30s" "HoldoffTimeoutSec=5s" sudo
 
 # user defaults
 if [ $USER = fw ]; then
@@ -285,7 +289,8 @@ fi
 ## FIX ME! The check is not good....
 if [ ! -f $HOME/.zshrc ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
+    replace_or_append $HOME/.zshrc "ZSH_THEME=" "ZSH_THEME=\"agnoster\""
+    # sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' ~/.zshrc
 fi
 
 # Aliases and functions
