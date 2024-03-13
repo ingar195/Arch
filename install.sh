@@ -246,8 +246,6 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
     replace_or_append /etc/dunst/dunstrc "notification_limit = 0" "notification_limit = 5" sudo
 
-    ## REPLACE!!!
-    sudo paru -S --noconfirm --needed ttf-nerd-fonts-symbols
     # Directory
     mkdir -p $HOME/workspace &> /dev/null
     
