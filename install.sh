@@ -1,10 +1,13 @@
 # Define commandline options
-optstring="d"
+optstring="d:s"
 while getopts "$optstring" optchar; do
   case $optchar in
     d)
       DEBUG=true
       ;;
+    s)
+        skip_convert=true
+        ;;
     ?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -225,7 +228,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     install_packages "user_packages"
 
     # TLP
-    systemctl enable tlp.service --now 
+    sudo systemctl enable tlp.service --now 
     replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
     replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
     replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=performance" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
@@ -322,8 +325,11 @@ sudo powertop --auto-tune &> /dev/null
 paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
-sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
-
+if [ -z $skip_convert ]; then
+    replace_or_append $HOME/.dotfiles/config "https://github.com/" "git@github.com:" sudo
+else
+    logging WARNING "Skipping conversion from https to ssh"
+fi
 
 echo ----------------------
 echo "Please reboot your PC"
