@@ -216,6 +216,12 @@ replace_or_append /etc/systemd/logind.conf "#IdleAction=ignore" "IdleAction=susp
 replace_or_append /etc/systemd/logind.conf "#IdleActionSec=30min" "IdleActionSec=10min" sudo
 replace_or_append /etc/systemd/logind.conf "#HoldoffTimeoutSec=30s" "HoldoffTimeoutSec=5s" sudo
 
+
+# Adding 
+sudo cp suspend-lock.service /etc/systemd/system/suspend-lock.service
+sudo sed -i "s/User=USER/User=$USER/g" /etc/systemd/system/suspend-lock.service
+sudo systemctl enable suspend-lock.service
+
 # user defaults
 if [ $USER = fw ]; then
     # Remember where we where..
