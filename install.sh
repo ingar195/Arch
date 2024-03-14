@@ -168,7 +168,9 @@ xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
 
 mkdir -p $HOME/.config/teamviewer &> /dev/null
 # not setting on fresh install
-replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
+
+# BUG: This is now wokring. It's just a just adding at the bottom of the file
+# replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
     replace_or_append /etc/environment "GTK_THEME=Adwaita-dark" "GTK_THEME=Adwaita-dark" sudo
@@ -176,8 +178,9 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
 fi
 
 # Set Backlight permissions and monotor rules
-replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" "SUBSYSTEM==\"backlight\",RUN+=\"/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power\"" sudo 
-replace_or_append /etc/udev/rules.d/70-monitor.rules "" 'SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr"' sudo
+# Replace does not work, something wrong with "'" in the string
+echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
+sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
 
 # Enable services
 sudo systemctl enable teamviewerd.service --now
@@ -205,7 +208,7 @@ sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
 #replace_or_append /var/ossec/etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
 
 # Start wazuh-agent
-sudo systemctl enable --now wazuh-agent | logging ERROR "Wazuh did not start..."
+sudo systemctl enable --now wazuh-agent
 
 # Power Save
 replace_or_append /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=suspend" sudo
