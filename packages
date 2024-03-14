@@ -19,6 +19,7 @@ gnu-netcat
 google-chrome
 gparted
 kicad
+ltunify
 man-db
 meld
 mlocate
@@ -43,6 +44,7 @@ sshpass
 syslog-ng
 subversion
 teamviewer
+tree
 unzip
 variety
 visual-studio-code-bin
