@@ -1,5 +1,5 @@
 # Define commandline options
-optstring="d:s"
+optstring=":ds"
 while getopts "$optstring" optchar; do
   case $optchar in
     d)
@@ -79,16 +79,18 @@ replace_or_append() {
     local sudo="sudo"
   fi
 
+  # This gives false positive on files that curen uer doen not have read access to wazuh client ins on example
+  # Command to be run a s sudo 
   if [ ! -f $file ]; then
     $sudo touch $file
     logging INFO "Created file: $file"
   fi
 
   # Use grep to check if target exists (avoids unnecessary sed invocation)
-if $sudo grep -q "^$replacement" "$file"; then
-    logging INFO "Replacement already exists in file: $file"
+if $sudo grep -q "^$replacement/s" "$file"; then
+    logging DEBUG "Replacement already exists in file: $file"
 else
-    if $sudo grep -q "^$target" "$file"; then
+    if $sudo grep -q "^$target/s" "$file"; then
         # Perform in-place replacement with sed (consider using a temporary file for safety)
         $sudo sed -i "/^$target/s//$replacement/" "$file"
         logging INFO "Changed line in file: $file"
@@ -174,7 +176,7 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
 fi
 
 # Set Backlight permissions and monotor rules
-replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' sudo 
+replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" 'SUBSYSTEM==\"backlight\",RUN+=\"/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power\"' sudo 
 replace_or_append /etc/udev/rules.d/70-monitor.rules "" 'SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr"' sudo
 
 # Enable services
@@ -199,7 +201,8 @@ replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouv
 sudo systemctl enable docker.service acpid.service --now
 
 # Wazuh-agent
-replace_or_append /var/ossec/etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
+sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
+#replace_or_append /var/ossec/etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
 
 # Start wazuh-agent
 sudo systemctl enable --now wazuh-agent | logging ERROR "Wazuh did not start..."
