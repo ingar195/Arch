@@ -71,7 +71,8 @@ replace_or_append() {
   local file="$1"  # Target file
   local target="$2" # Line to replace (target string)
   local replacement="$3" # Replacement line
-  
+  logging DEBUG "Replacing or appending $target with $replacement in $file"
+
   if [ -z $4 ]; then
     local sudo=""
   else
@@ -305,7 +306,7 @@ fi
 
 if [ ! -f $HOME/.oh-my-zsh/README.md ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    replace_or_append $HOME/.zshrc "ZSH_THEME=robbyrussell" "ZSH_THEME=agnoster"
+    replace_or_append $HOME/.zshrc "ZSH_THEME=\"robbyrussell\"" "ZSH_THEME=\"agnoster\""
 fi
 
 # Aliases and functions
