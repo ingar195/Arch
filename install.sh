@@ -6,8 +6,9 @@ while getopts "$optstring" optchar; do
       DEBUG=true
       ;;
     s)
-        skip_convert=true
-        ;;
+      skip_convert=true
+      logging INFO "Skipping conversion from https to ssh"
+      ;;
     ?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -58,10 +59,10 @@ install_code_packages() {
     local installed_extensions=$(code --list-extensions)
     while IFS= read -r package || [[ -n "$package" ]]; do
         if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
-            logger DEBUG "$package is already installed"
+            logging DEBUG "$package is already installed"
             continue
         fi
-        code --install-extension "$package" &>/dev/null || logger ERROR "failed to install $package"
+        code --install-extension "$package" &>/dev/null || logging ERROR "failed to install $package"
     done < "$filename"
 }
 
@@ -79,28 +80,28 @@ replace_or_append() {
 
   if [ ! -f $file ]; then
     $sudo touch $file
-    logger INFO "Created file: $file"
+    logging INFO "Created file: $file"
   fi
 
   # Use grep to check if target exists (avoids unnecessary sed invocation)
 if $sudo grep -q "^$replacement" "$file"; then
-    logger INFO "Replacement already exists in file: $file"
+    logging INFO "Replacement already exists in file: $file"
 else
     if $sudo grep -q "^$target" "$file"; then
         # Perform in-place replacement with sed (consider using a temporary file for safety)
         $sudo sed -i "/^$target/s//$replacement/" "$file"
-        logger INFO "Changed line in file: $file"
+        logging INFO "Changed line in file: $file"
     else
         # Append replacement if target not found
         $sudo sh -c "echo $replacement >> $file"
-        logger INFO "Added line in file: $file"
+        logging INFO "Added line in file: $file"
     fi
 fi
 }
 
 
 if [[ -n "$SUDO_USER" || -n "$SUDO_UID" ]]; then
-    logger ERROR "You are not allowed to run this script as sudo"
+    logging ERROR "You are not allowed to run this script as sudo"
     exit 1
 fi
 
@@ -151,7 +152,7 @@ install_code_packages "code_packages"
 if [[ ! -f $HOME/.ssh/id_rsa ]]
 then
     ssh-keygen -m PEM -N '' -f ~/.ssh/id_rsa
-    logger WARNING "Did not find SSH key, and created a new one"
+    logging WARNING "Did not find SSH key, and created a new one"
 fi
 
 sudo timedatectl set-timezone Europe/Oslo
@@ -191,6 +192,8 @@ sudo systemctl enable NetworkManager.service --now
 
 replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "blacklist nouveau" sudo
 # sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+
+# Failed to add to file 
 replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouveau modeset=0" sudo
 # sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 
@@ -201,7 +204,7 @@ sudo systemctl enable docker.service acpid.service --now
 replace_or_append /var/ossec/etc/ossec.conf "MANAGER_IP" "213.161.247.227" sudo
 
 # Start wazuh-agent
-sudo systemctl enable --now wazuh-agent | logger ERROR "Wazuh did not start..."
+sudo systemctl enable --now wazuh-agent | logging ERROR "Wazuh did not start..."
 
 # Power Save
 replace_or_append /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=suspend" sudo
@@ -279,17 +282,17 @@ then
     git clone --bare $git_url $HOME/.dotfiles 
     dotfiles checkout -f || logging ERROR "Dotfiles checkout failed."
     if [ $? -ne 0 ]; then
-        logger WARNING "Dotfiles pull failed. retrying..."
+        logging WARNING "Dotfiles pull failed. retrying..."
         sudo rm -rf $HOME/.dotfiles
         git clone --bare $git_url $HOME/.dotfiles
     else
-        logger INFO "Dotfiles Successfully checked out."
+        logging INFO "Dotfiles Successfully checked out."
     fi
 else
     
-    logger INFO "Updating dotfiles"
+    logging INFO "Updating dotfiles"
     
-    dotfiles pull || logger ERROR "Dotfiles pull failed."    
+    dotfiles pull || logging ERROR "Dotfiles pull failed."    
 fi
 
 # Create folders for filemanager
@@ -305,7 +308,7 @@ fi
 
 if [ ! -f $HOME/.oh-my-zsh/README.md ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    replace_or_append $HOME/.zshrc "ZSH_THEME=" "ZSH_THEME=\"agnoster\""
+    replace_or_append $HOME/.zshrc "ZSH_THEME=robbyrussell" "ZSH_THEME=agnoster"
 fi
 
 # Aliases and functions
