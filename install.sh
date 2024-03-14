@@ -176,7 +176,7 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
 fi
 
 # Set Backlight permissions and monotor rules
-replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" 'SUBSYSTEM==\"backlight\",RUN+=\"/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power\"' sudo 
+replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" "SUBSYSTEM==\"backlight\",RUN+=\"/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power\"" sudo 
 replace_or_append /etc/udev/rules.d/70-monitor.rules "" 'SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr"' sudo
 
 # Enable services
