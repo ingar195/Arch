@@ -93,7 +93,7 @@ else
         logging INFO "Changed line in file: $file"
     else
         # Append replacement if target not found
-        $sudo sh -c "echo $replacement >> $file"
+        $sudo sh -c "$sudo echo $replacement >> $file"
         logging INFO "Added line in file: $file"
     fi
 fi
@@ -174,9 +174,7 @@ fi
 
 # Set Backlight permissions and monotor rules
 replace_or_append /etc/udev/rules.d/backlight-permissions.rules "" 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' sudo 
-#echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
 replace_or_append /etc/udev/rules.d/70-monitor.rules "" 'SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr"' sudo
-# sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
 
 # Enable services
 sudo systemctl enable teamviewerd.service --now
@@ -191,9 +189,8 @@ sudo systemctl disable iwd.service &> /dev/null
 sudo systemctl enable NetworkManager.service --now
 
 replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "blacklist nouveau" sudo
-# sudo sh -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 
-# Failed to add to file 
+# BUG: Failed to add to file 
 replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouveau modeset=0" sudo
 # sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
 
@@ -339,6 +336,7 @@ paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 # Converts https to ssh
 if [ -z $skip_convert ]; then
     sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+    logging INFO "Converted from https to ssh"
 else
     logging WARNING "Skipping conversion from https to ssh"
 fi
