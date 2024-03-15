@@ -40,10 +40,10 @@ add_source_to_zshrc() {
 
 # Install Packages from file
 install_packages() {
-    logging DEBUG "Installing from $1"
+    logging INFO "Installing from $1"
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
-        if [ -n "$(paru -Qs "$package")" ]; then
+        if [ -n "$(paru -Q "$package")" ]; then
             logging DEBUG "$package is already installed"
             continue
         fi
