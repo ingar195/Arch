@@ -47,7 +47,7 @@ install_packages() {
             logging DEBUG "$package is already installed"
             continue
         fi
-        logging INFO "--------------------------------Installing $package"
+        logging INFO "Installing $package"
         paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
     done < "$filename"
 }
@@ -110,6 +110,7 @@ BASE=$(git merge-base @ "$UPSTREAM")
 
 if [ $LOCAL = $REMOTE ]; then
     logging INFO "Install script is Up-to-date"
+    sleep 5
 elif [ $LOCAL = $BASE ]; then
     logging WARNING "This is not the latest version of the install script. You should pull this repo..."
     sleep 10
@@ -183,7 +184,8 @@ sudo timedatectl set-timezone Europe/Oslo
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
-xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+# not needed?
+# xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
 
 mkdir -p $HOME/.config/teamviewer &> /dev/null
 # not setting on fresh install
@@ -346,8 +348,9 @@ fi
 
 if [ ! -f $HOME/.oh-my-zsh/README.md ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    replace_or_append $HOME/.zshrc "ZSH_THEME=\"robbyrussell\"" "ZSH_THEME=\"agnoster\""
+    # replace_or_append $HOME/.zshrc "ZSH_THEME=\"robbyrussell\"" "ZSH_THEME=\"agnoster\""
 fi
+sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/' $HOME/.zshrc
 
 # Aliases and functions
 # Copy .aliases and .functions files to .config
