@@ -12,6 +12,7 @@ curl
 dmidecode
 docker
 dunst
+efibootmgr
 feh
 flameshot
 fwupd
@@ -20,6 +21,7 @@ gnome-themes-extra
 gnu-netcat
 google-chrome
 gparted
+intel-ucode
 kicad
 lightdm
 lightdm-gtk-greeter
@@ -36,12 +38,15 @@ numix-gtk-theme-git
 numlockx
 p7zip
 pavucontrol
+paru-bin
+paru-bin-debug
 qbittorrent
 qelectrotech
 rclone
 remmina
 remmina-plugin-rdesktop
 rofi
+rust
 rsync
 screen
 slack-desktop

@@ -262,6 +262,8 @@ replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=powersave" "CPU_SCA
 
 # user defaults
 if [ $USER = fw ]; then
+
+
     # Remember where we where..
     cwd=$(pwd)
     
@@ -284,6 +286,8 @@ if [ $USER = fw ]; then
 
     # Get back to where we started from
     cd $cwd
+    
+    systemctl --user enable --now ssh-agent
 
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
