@@ -87,9 +87,9 @@ replace_or_append() {
   fi
 
   # Use grep to check if target exists (avoids unnecessary sed invocation)
-if $sudo grep -q "$replacement" "$file"; then
+  if $sudo grep -q "$replacement" "$file"; then
     logging DEBUG "Replacement already exists in file: $file"
-else
+  else
     if $sudo grep -q "/^$target/s" "$file"; then
         # Perform in-place replacement with sed (consider using a temporary file for safety)
         $sudo sed -i "/^$target/s//$replacement/" "$file"
@@ -101,6 +101,25 @@ else
     fi
 fi
 }
+
+
+UPSTREAM=${1:-'@{u}'}
+LOCAL=$(git rev-parse @)
+REMOTE=$(git rev-parse "$UPSTREAM")
+BASE=$(git merge-base @ "$UPSTREAM")
+
+if [ $LOCAL = $REMOTE ]; then
+    logging INFO "Install script is Up-to-date"
+elif [ $LOCAL = $BASE ]; then
+    logging WARNING "This is not the latest version of the install script. You should pull this repo..."
+    sleep 10
+elif [ $REMOTE = $BASE ]; then
+    logging WARNING "You have unstaged changes to the install script. Please push when you have tested..."
+    sleep 10
+else
+    logging ERROR "git repo for install script has diverged. Please investigate..."
+    sleep 30
+fi
 
 
 if [[ -n "$SUDO_USER" || -n "$SUDO_UID" ]]; then
@@ -355,6 +374,40 @@ if [ -z $skip_convert ]; then
 else
     logging WARNING "Skipping conversion from https to ssh"
 fi
+
+
+# List all packages installed on system that is not installed by this script
+declare -a package_lists
+
+# Find files named "packages" or ending with "packages"
+package_files=( 
+  "packages" 
+  *"_packages" 
+)
+for file in "${package_files[@]}"; do
+  # Read packages from the file and store them in the array
+  while IFS= read -r package; do
+    package_lists+=("$package")
+  done < "$file"
+done
+
+installed_packages=$(pacman -Qtq)
+
+unlisted_packages=()
+for package in $installed_packages; do
+  # Check if package exists in the array (any list file)
+  if [[ ! "${package_lists[@]}" =~ "$package" ]]; then
+    unlisted_packages+=("$package")
+  fi
+done
+
+if [[ ${#unlisted_packages[@]} -gt 0 ]]; then
+  logging WARNING "The following packages are found on the system: ${unlisted_packages[@]}"
+  # As our logger does not support printing a list somehow, I echo it out to terminal for now... TO BE FIXED
+  echo "${unlisted_packages[@]}"
+fi
+
+
 
 echo ----------------------
 echo "Please reboot your PC"
