@@ -216,11 +216,30 @@ replace_or_append /etc/systemd/logind.conf "#IdleAction=ignore" "IdleAction=susp
 replace_or_append /etc/systemd/logind.conf "#IdleActionSec=30min" "IdleActionSec=10min" sudo
 replace_or_append /etc/systemd/logind.conf "#HoldoffTimeoutSec=30s" "HoldoffTimeoutSec=5s" sudo
 
-
-# Adding 
+# Lockscreen after suspend
 sudo cp suspend-lock.service /etc/systemd/system/suspend-lock.service
 sudo sed -i "s/User=USER/User=$USER/g" /etc/systemd/system/suspend-lock.service
 sudo systemctl enable suspend-lock.service
+    
+# OSC Printer
+sudo systemctl enable --now cups
+lpadmin -p OSC_Printer -E -v "ipp://192.168.6.11/ipp/print" -m everywhere
+
+# Greeter
+replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
+replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#icon-theme-name=" "icon-theme-name=Papirus-Dark" sudo
+replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#background=" "background=#2f343f" sudo
+replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#xft-dpi=" "xft-dpi=261" sudo
+
+# Lightdm
+sudo systemctl enable lightdm
+
+# TLP
+sudo systemctl enable tlp.service --now 
+replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
+replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
+replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=powersave" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
+
 
 # user defaults
 if [ $USER = fw ]; then
@@ -247,25 +266,11 @@ if [ $USER = fw ]; then
     # Get back to where we started from
     cd $cwd
 
+
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
 
     install_packages "user_packages"
-
-    # TLP
-    sudo systemctl enable tlp.service --now 
-    replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
-    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
-    replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=powersave" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
-
-    # Greeter
-    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
-    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#icon-theme-name=" "icon-theme-name=Papirus-Dark" sudo
-    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#background=" "background=#2f343f" sudo
-    replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#xft-dpi=" "xft-dpi=261" sudo
-
-    # Lightdm
-    sudo systemctl enable lightdm
 
     # Dunst settings 
     replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
@@ -339,9 +344,6 @@ fi
 
 # Update locate database
 sudo updatedb
-
-# Power settings
-sudo powertop --auto-tune &> /dev/null
 
 # Cleanup unused packages 
 paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
