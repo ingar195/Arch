@@ -393,7 +393,7 @@ package_files=(
 )
 for file in "${package_files[@]}"; do
   # Read packages from the file and store them in the array
-  while IFS= read -r package; do
+  while IFS= read -r package  || [[ -n "$package" ]]; do
     package_lists+=("$package")
   done < "$file"
 done
