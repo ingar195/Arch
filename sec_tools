@@ -2,9 +2,11 @@ nmap
 gobuster
 burpsuite
 zaproxy
-Metasploit
-dirbuster
+metasploit
+dirsearch
 subfinder
-Seclists
+seclists
 exploitdb
 openvpn
+nikto
+whatweb
