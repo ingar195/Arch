@@ -297,6 +297,8 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
 
     install_packages "user_packages"
 
+    sudo systemctl  enable --now bluetooth.service
+
     # Dunst settings 
     replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
     replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
