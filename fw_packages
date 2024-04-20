@@ -5,8 +5,6 @@ microsoft-edge-stable-bin
 libva-intel-driver
 dmenu
 prusa-slicer
-xidlehook
-python-pip
 kubectl
 tmux
 maven
