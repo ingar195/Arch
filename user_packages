@@ -6,9 +6,12 @@ xorg-xinit
 i3-wm
 i3blocks
 i3exit
+blueman
 tlp
 tlp-rdw
+nano
 papirus-icon-theme
+ttf-nerd-fonts-symbols
 arc-gtk-theme
 picom
 polybar
