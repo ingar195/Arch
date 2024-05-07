@@ -37,9 +37,9 @@ ntfs-3g
 numix-gtk-theme-git
 numlockx
 p7zip
-pavucontrol
 paru-bin
 paru-bin-debug
+pavucontrol
 python-pip
 qbittorrent
 qelectrotech
@@ -47,8 +47,8 @@ rclone
 remmina
 remmina-plugin-rdesktop
 rofi
-rust
 rsync
+rust
 screen
 slack-desktop
 sof-firmware
@@ -63,11 +63,11 @@ tree
 unzip
 variety
 virt-manager
+virtualbox
 visual-studio-code-bin
 wazuh-agent
 wget
 wireguard-tools
-xautolock
 xclip
 xidlehook
 xorg-xkill

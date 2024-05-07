@@ -1,5 +1,14 @@
+# Logg messages should be in format    logging INFO MESSAGE
+logging(){
+  if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
+    echo "$1: $2" | tee -a log.log &> /dev/null
+  else
+    echo "$1: $2" | tee -a log.log
+  fi
+}
+
 # Define commandline options
-optstring=":ds"
+optstring=":dsc"
 while getopts "$optstring" optchar; do
   case $optchar in
     d)
@@ -9,22 +18,16 @@ while getopts "$optstring" optchar; do
       skip_convert=true
       logging INFO "Skipping conversion from https to ssh"
       ;;
+    c)
+        sectools=true
+        logging INFO "Adding security tools"
+      ;;
     ?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
       ;;
   esac
 done
-
-
-# Logg messages should be in format    logging INFO MESSAGE
-logging(){
-  if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
-    echo "$1: $2" | tee -a log.log &> /dev/null
-  else
-    echo "$1: $2" | tee -a log.log
-  fi
-}
 
 
 # Function to add source to .zshrc if not already there
@@ -103,18 +106,22 @@ fi
 }
 
 
-UPSTREAM=${1:-'@{u}'}
+UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
 LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "$UPSTREAM")
 BASE=$(git merge-base @ "$UPSTREAM")
 
-if [ $LOCAL = $REMOTE ]; then
+logging debug "Local: $LOCAL"
+logging debug "Remote: $REMOTE"
+logging debug "Base: $BASE"
+
+if [ "$LOCAL" = "$REMOTE" ]; then
     logging INFO "Install script is Up-to-date"
     sleep 5
-elif [ $LOCAL = $BASE ]; then
+elif [ "$LOCAL" = "$BASE" ]; then
     logging WARNING "This is not the latest version of the install script. You should pull this repo..."
     sleep 10
-elif [ $REMOTE = $BASE ]; then
+elif [ "$REMOTE" = "$BASE" ]; then
     logging WARNING "You have unstaged changes to the install script. Please push when you have tested..."
     sleep 10
 else
@@ -170,6 +177,11 @@ replace_or_append /etc/pacman.conf "#Color" "Color" "sudo"
 install_packages "packages"
 
 install_code_packages "code_packages"
+
+# Install security tools if -c flag is set
+if [ -n "$sectools" ]; then
+    install_packages "security_packages"
+fi
 
 # Generate ssh key
 if [[ ! -f $HOME/.ssh/id_rsa ]]
@@ -261,6 +273,8 @@ replace_or_append /etc/tlp.conf "#TLP_ENABLE=1" "TLP_ENABLE=1" sudo
 replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_BAT=powersave" "CPU_SCALING_GOVERNOR_ON_BAT=powersave" sudo
 replace_or_append /etc/tlp.conf "#CPU_SCALING_GOVERNOR_ON_AC=powersave" "CPU_SCALING_GOVERNOR_ON_AC=performance" sudo
 
+# Setting TERM to xterm
+replace_or_append $HOME/.zshrc "export TERM=xterm" "export TERM=xterm"
 
 # user defaults
 if [ $USER = fw ]; then
