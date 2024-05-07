@@ -11,9 +11,9 @@ nikto
 nmap
 openvpn
 seclists
-sqlmap-git 
+sqlmap-git
 subfinder
-traceroute   
+traceroute
 whatweb
 wpscan
 xsstrike
