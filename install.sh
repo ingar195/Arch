@@ -111,9 +111,9 @@ LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "$UPSTREAM")
 BASE=$(git merge-base @ "$UPSTREAM")
 
-logging debug "Local: $LOCAL"
-logging debug "Remote: $REMOTE"
-logging debug "Base: $BASE"
+logging DEBUG "Local: $LOCAL"
+logging DEBUG "Remote: $REMOTE"
+logging DEBUG "Base: $BASE"
 
 if [ "$LOCAL" = "$REMOTE" ]; then
     logging INFO "Install script is Up-to-date"
@@ -180,7 +180,7 @@ install_code_packages "code_packages"
 
 # Install security tools if -c flag is set
 if [ -n "$sectools" ]; then
-    install_packages "security_packages"
+    install_packages "sec_tools"
 fi
 
 # Generate ssh key
