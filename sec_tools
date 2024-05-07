@@ -4,7 +4,7 @@ dirbuster
 dirsearch
 dirsearch-git
 exploitdb
-ffuf-bin  
+ffuf-bin
 gobuster
 metasploit
 nikto
