@@ -180,7 +180,7 @@ install_code_packages "code_packages"
 
 # Install security tools if -c flag is set
 if [ -n "$sectools" ]; then
-    install_packages "sec_tools"
+    install_packages "sec_packages"
 fi
 
 # Generate ssh key
@@ -375,6 +375,8 @@ mkdir -p $zsh_config_path
 
 cp .aliases $zsh_config_path/
 cp .functions $zsh_config_path/
+
+sudo sed -i "s|script_path|$PWD|g" $HOME/.config/zsh/.functions
 
 # Add sources to .zshrc if not already there
 add_source_to_zshrc "$zsh_config_path/.aliases"
