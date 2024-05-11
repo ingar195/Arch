@@ -5,7 +5,7 @@ Description=Lock the screen on suspend
 User=USER
 Type=forking
 Environment=DISPLAY=:0
-ExecStart=/usr/bin/i3lock
+ExecStart=/usr/bin/i3lock --color 111111 
 
 [Install]
 WantedBy=suspend.target

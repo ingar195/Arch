@@ -2,8 +2,12 @@ function install() {
     paru "$1"
 }
 function uninstall() {
-   paru "$1" -Rns
+    paru "$1" -Rns
 }
 function update() {
-    paru -Syu
+    curdir=$PWD
+    cd script_path
+    sh install.sh
+    cd $curdir
+
 }
