@@ -117,7 +117,6 @@ logging DEBUG "Base: $BASE"
 
 if [ "$LOCAL" = "$REMOTE" ]; then
     logging INFO "Install script is Up-to-date"
-    sleep 5
 elif [ "$LOCAL" = "$BASE" ]; then
     logging WARNING "This is not the latest version of the install script. You should pull this repo..."
     sleep 10
@@ -309,7 +308,7 @@ if [ $USER = fw ]; then
 elif [ $USER = user ] || [ $USER = ingar ]; then
     git_url="https://github.com/ingar195/.dotfiles.git"
 
-    install_packages "user_packages"
+    install_packages $USER"_packages"
 
     sudo systemctl  enable --now bluetooth.service
 
