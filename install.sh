@@ -82,7 +82,7 @@ replace_or_append() {
     local sudo="sudo"
   fi
 
-  # This gives false positive on files that curen uer doen not have read access to wazuh client ins on example
+  # This gives false positive on files that curen user don't not have read access to wazuh client ins on example
   # Command to be run a s sudo 
   if [ ! -f $file ]; then
     $sudo touch $file
@@ -104,6 +104,8 @@ replace_or_append() {
     fi
 fi
 }
+
+
 
 
 UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
@@ -305,7 +307,7 @@ if [ $USER = fw ]; then
     systemctl --user enable --now ssh-agent
 
 
-elif [ $USER = user ] || [ $USER = ingar ]; then
+install_i3() {
     git_url="https://github.com/ingar195/.dotfiles.git"
 
     install_packages $USER"_packages"
@@ -315,17 +317,26 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     # Dunst settings 
     replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
     replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
-
-    # Directory
-    mkdir -p $HOME/workspace &> /dev/null
     
     if [ ! -f "$HOME/.dotfiles/config" ];then
         rm .config/i3/config
         mkdir .config/polybar
     fi
 
+    replace_or_append /etc/systemd/systemd.conf "#DefaultTimeoutStopSec=90s" "DefaultTimeoutStopSec=10s" sudo
+
+    skip_convert=true
+}
+
+elif [ $USER = user ] || [ $USER = ingar ]; then
+
+    # Create directory's
+    mkdir -p $HOME/workspace &> /dev/null
+    
+    install_i3
+    skip_convert=false
 else
-    read -p "enter the https URL for you git bare repo : " git_url
+    read -p "enter the https URL for you git bare repo: " git_url
 fi
 
 # Tmp alias for installation only 
@@ -392,7 +403,7 @@ sudo updatedb
 paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
-if [ -z $skip_convert ]; then
+if [ -z $skip_convert ] || [ $skip_convert = false ]; then
     sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
     logging INFO "Converted from https to ssh"
 else
