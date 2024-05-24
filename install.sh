@@ -23,7 +23,7 @@ while getopts "$optstring" optchar; do
         logging INFO "Adding security tools"
       ;;
     ?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$OPTARG, valid ones -s -d -c" >&2
       exit 1
       ;;
   esac
@@ -46,15 +46,18 @@ install_packages() {
     logging INFO "Installing from $1"
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
-        if [ -n "$(paru -Q "$package")" ]; then
+        if paru -Q "$package" &> /dev/null; then
             logging DEBUG "$package is already installed"
             continue
+        else
+            logging DEBUG "$package is not installed, installing now"
+            paru -S --noconfirm "$package"
         fi
+
         logging INFO "Installing $package"
         paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
     done < "$filename"
 }
-
 
 install_code_packages() {
     logging INFO "Installing code extensions"
@@ -185,7 +188,8 @@ if ! groups $USER | grep &>/dev/null '\buucp\b'; then
     reboot=true
 fi
 if ! groups $USER | grep &>/dev/null '\docker\b'; then
-    sudo usermod -aG docker $USER
+    # sudo usermod -aG docker $USER
+    sudo gpasswd -a $USER docker
     reboot=true
 fi
 
@@ -232,6 +236,11 @@ mkdir -p $HOME/.config/teamviewer &> /dev/null
 # not setting on fresh install
 
 # BUG: This is now wokring. It's just a just adding at the bottom of the file
+if [ ! -f $HOME/.config/teamviewer/client.conf ]; then
+    replace_or_append /etc/teamviewer/global.conf "[int32] EulaAccepted = 1" "[int32] EulaAccepted = 1" sudo
+    echo "[int32] ColorScheme = 2" | tee $HOME/.config/teamviewer/client.conf &> /dev/null
+    echo "[int32] OnboardingTaskState = 1 1 1" | sudo tee /etc/teamviewer/client.conf &> /dev/null
+fi
 # replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
@@ -412,15 +421,6 @@ if [ -z $skip_convert ] || [ $skip_convert = false ]; then
     logging INFO "Converted from https to ssh"
 else
     logging WARNING "Skipping conversion from https to ssh"
-fi
-
-
-# Get the name of the remote for the master branch
-upstream=$(git config --get branch.master.remote)
-
-# If the upstream is not set or is not origin, set it
-if [[ -z "$upstream" || "$upstream" != "origin" ]]; then
-    git branch --set-upstream-to=origin/master master
 fi
 
 # List all packages installed on system that is not installed by this script
