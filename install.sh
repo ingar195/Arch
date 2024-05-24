@@ -175,9 +175,18 @@ if [ -z "$(git config user.name)" ]; then
     git config --global user.name "$git_name"
 fi
 
+
+
+
 # Add user to uucp group to allow access to serial ports
+# TODO: this should be a function now 
 if ! groups $USER | grep &>/dev/null '\buucp\b'; then
     sudo gpasswd -a $USER uucp
+    reboot=true
+fi
+if ! groups $USER | grep &>/dev/null '\docker\b'; then
+    sudo usermod -aG docker $USER
+    reboot=true
 fi
 
 # Install Paru helper
@@ -352,9 +361,7 @@ then
         logging INFO "Dotfiles Successfully checked out."
     fi
 else
-    
     logging INFO "Updating dotfiles"
-    
     dotfiles pull || logging ERROR "Dotfiles pull failed."    
 fi
 
@@ -408,6 +415,14 @@ else
 fi
 
 
+# Get the name of the remote for the master branch
+upstream=$(git config --get branch.master.remote)
+
+# If the upstream is not set or is not origin, set it
+if [[ -z "$upstream" || "$upstream" != "origin" ]]; then
+    git branch --set-upstream-to=origin/master master
+fi
+
 # List all packages installed on system that is not installed by this script
 declare -a package_lists
 
@@ -439,8 +454,13 @@ if [[ ${#unlisted_packages[@]} -gt 0 ]]; then
   echo "${unlisted_packages[@]}"
 fi
 
+# Reboot if any changes were made
+# Make this actually work
+reboot=true
+if [ "$reboot" = true ]; then
+    echo ----------------------
+    echo "Please reboot your PC"
+    echo ----------------------
+fi
 
 
-echo ----------------------
-echo "Please reboot your PC"
-echo ----------------------

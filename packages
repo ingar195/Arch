@@ -11,6 +11,7 @@ cups
 curl
 dmidecode
 docker
+docker-compose
 dunst
 efibootmgr
 feh
@@ -73,3 +74,4 @@ xidlehook
 xorg-xkill
 zip
 zsh
+zram-generator

@@ -13,8 +13,9 @@ Here is the basic installation guide:
 2. Install, then reboot without chroot
 3. Navigate to where you want to store the script
 4. Clone the repository: `git clone https://github.com/ingar195/arch.git`
-5. Run the script: `sh install.sh`
-6. Reboot the PC
+5. cd to the arch folder
+6. Run the script: `sh install.sh`
+7. Reboot the PC
 
 ## Dotfiles
 Dotfiles is what we have named the git bare repo we use for backing up OS settings and non-sensitive files.  
