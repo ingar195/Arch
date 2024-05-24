@@ -50,12 +50,9 @@ install_packages() {
             logging DEBUG "$package is already installed"
             continue
         else
-            logging DEBUG "$package is not installed, installing now"
-            paru -S --noconfirm "$package"
+            logging INFO "$package is not installed, installing now"
+            paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
         fi
-
-        logging INFO "Installing $package"
-        paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
     done < "$filename"
 }
 
@@ -406,6 +403,7 @@ add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
 
 file_to_source="$zsh_config_path/.work"
+
 if [[ $zsh_work == "y" && ! $(grep -q "$file_to_source" ~/.zshrc) ]]; then
     add_source_to_zshrc "$file_to_source"
 fi
