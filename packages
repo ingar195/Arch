@@ -42,7 +42,7 @@ paru-bin-debug
 pavucontrol
 python-pip
 qbittorrent
-qelectrotech
+#qelectrotech
 rclone
 remmina
 remmina-plugin-rdesktop
