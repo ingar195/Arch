@@ -105,7 +105,26 @@ replace_or_append() {
 fi
 }
 
+install_i3() {
+    git_url="https://github.com/ingar195/.dotfiles.git"
 
+    install_packages $USER"_packages"
+
+    sudo systemctl  enable --now bluetooth.service
+
+    # Dunst settings 
+    replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
+    replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
+    
+    if [ ! -f "$HOME/.dotfiles/config" ];then
+        rm .config/i3/config
+        mkdir .config/polybar
+    fi
+
+    replace_or_append /etc/systemd/systemd.conf "#DefaultTimeoutStopSec=90s" "DefaultTimeoutStopSec=10s" sudo
+
+    skip_convert=true
+}
 
 
 UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
@@ -305,28 +324,6 @@ if [ $USER = fw ]; then
     cd $cwd
     
     systemctl --user enable --now ssh-agent
-
-
-install_i3() {
-    git_url="https://github.com/ingar195/.dotfiles.git"
-
-    install_packages $USER"_packages"
-
-    sudo systemctl  enable --now bluetooth.service
-
-    # Dunst settings 
-    replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
-    replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
-    
-    if [ ! -f "$HOME/.dotfiles/config" ];then
-        rm .config/i3/config
-        mkdir .config/polybar
-    fi
-
-    replace_or_append /etc/systemd/systemd.conf "#DefaultTimeoutStopSec=90s" "DefaultTimeoutStopSec=10s" sudo
-
-    skip_convert=true
-}
 
 elif [ $USER = user ] || [ $USER = ingar ]; then
 
