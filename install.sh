@@ -238,10 +238,10 @@ mkdir -p $HOME/.config/teamviewer &> /dev/null
 # BUG: This is now wokring. It's just a just adding at the bottom of the file
 if [ ! -f $HOME/.config/teamviewer/client.conf ]; then
     replace_or_append /etc/teamviewer/global.conf "[int32] EulaAccepted = 1" "[int32] EulaAccepted = 1" sudo
+    replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
     echo "[int32] ColorScheme = 2" | tee $HOME/.config/teamviewer/client.conf &> /dev/null
     echo "[int32] OnboardingTaskState = 1 1 1" | sudo tee /etc/teamviewer/client.conf &> /dev/null
 fi
-# replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
     replace_or_append /etc/environment "GTK_THEME=Adwaita-dark" "GTK_THEME=Adwaita-dark" sudo
@@ -405,8 +405,9 @@ sudo sed -i "s|script_path|$PWD|g" $HOME/.config/zsh/.functions
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
 
-if [[ $zsh_work == "y" ]]; then
-    add_source_to_zshrc "$zsh_config_path/.work"
+file_to_source="$zsh_config_path/.work"
+if [[ $zsh_work == "y" && ! $(grep -q "$file_to_source" ~/.zshrc) ]]; then
+    add_source_to_zshrc "$file_to_source"
 fi
 
 # Update locate database
