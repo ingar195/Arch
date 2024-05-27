@@ -1,11 +1,32 @@
 # Logg messages should be in format    logging INFO MESSAGE
-logging(){
-  if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
-    echo "$1: $2" | tee -a log.log &> /dev/null
-  else
-    echo "$1: $2" | tee -a log.log
-  fi
+logging() {
+    local color_error="\e[31m"
+    local color_warning="\e[33m"
+    local color_reset="\e[0m"
+    local color_info="\e[32m"
+    local log_file="log.log"
+
+    if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
+        echo "$1: $2" | tee -a "$log_file" &> /dev/null
+    else
+
+        case $1 in
+            "ERROR")
+            echo -e "${color_error}$1: $2${color_reset}" | tee -a "$log_file"
+            ;;
+            "WARNING")
+            echo -e "${color_warning}$1: $2${color_reset}" | tee -a "$log_file"
+            ;;
+            "INFO")
+            echo -e "${color_info}$1: $2${color_reset}" | tee -a "$log_file"
+            ;;
+            *)
+            echo -e "$1: $2" | tee -a "$log_file"
+
+        esac    
+    fi
 }
+
 
 # Define commandline options
 optstring=":dsc"
@@ -43,7 +64,7 @@ add_source_to_zshrc() {
 
 # Install Packages from file
 install_packages() {
-    logging INFO "Installing from $1"
+    logging INFO "Installing/checking for new packages from $1"
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
         if paru -Q "$package" &> /dev/null; then
@@ -51,24 +72,27 @@ install_packages() {
             continue
         else
             logging INFO "$package is not installed, installing now"
-            paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
+            paru -S --noconfirm --needed "$package" &>/dev/null
+            if ! paru -Q "$package" &> /dev/null; then
+                logging ERROR "Failed to install $package"
+            fi
         fi
     done < "$filename"
 }
 
 install_code_packages() {
-    logging INFO "Installing code extensions"
+    logging INFO "Installing/updating code extensions"
     local filename=$1
     local installed_extensions=$(code --list-extensions)
     while IFS= read -r package || [[ -n "$package" ]]; do
-        if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
+        if echo "$installed_extensions" | grep -qE "^$package$" &> /dev/null; then
             logging DEBUG "$package is already installed"
             continue
         fi
-        code --install-extension "$package" &>/dev/null || logging ERROR "failed to install $package"
+        code --install-extension "$package" &>/dev/null || logging ERROR "failed to install VS Code extensions $package"
     done < "$filename"
-}
 
+}
 
 replace_or_append() {
   local file="$1"  # Target file
@@ -284,7 +308,10 @@ sudo systemctl enable suspend-lock.service
     
 # OSC Printer
 sudo systemctl enable --now cups
-lpadmin -p OSC_Printer -E -v "ipp://192.168.6.11/ipp/print" -m everywhere
+
+if ! lpstat -p OSC_Printer &> /dev/null; then
+    lpadmin -p OSC_Printer -E -v "ipp://192.168.6.11/ipp/print" -m everywhere
+fi
 
 # Greeter
 replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
@@ -442,8 +469,6 @@ done
 
 if [[ ${#unlisted_packages[@]} -gt 0 ]]; then
   logging WARNING "The following packages are found on the system: ${unlisted_packages[@]}"
-  # As our logger does not support printing a list somehow, I echo it out to terminal for now... TO BE FIXED
-  echo "${unlisted_packages[@]}"
 fi
 
 # Reboot if any changes were made
