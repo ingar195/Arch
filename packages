@@ -10,8 +10,6 @@ can-utils
 cups
 curl
 dmidecode
-docker
-docker-compose
 dunst
 efibootmgr
 feh
@@ -41,6 +39,7 @@ p7zip
 paru-bin
 paru-bin-debug
 pavucontrol
+podman
 python-pip
 qbittorrent
 #qelectrotech

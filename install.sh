@@ -176,17 +176,10 @@ if [ -z "$(git config user.name)" ]; then
 fi
 
 
-
-
 # Add user to uucp group to allow access to serial ports
 # TODO: this should be a function now 
 if ! groups $USER | grep &>/dev/null '\buucp\b'; then
     sudo gpasswd -a $USER uucp
-    reboot=true
-fi
-if ! groups $USER | grep &>/dev/null '\docker\b'; then
-    # sudo usermod -aG docker $USER
-    sudo gpasswd -a $USER docker
     reboot=true
 fi
 
