@@ -7,7 +7,7 @@ function uninstall() {
 function update() {
     curdir=$PWD
     cd script_path
-    git pull
+    git pull &> /dev/null
     sh install.sh
     cd $curdir
 

@@ -5,6 +5,7 @@ logging() {
     local color_reset="\e[0m"
     local color_info="\e[32m"
     local log_file="log.log"
+    local date="[$(date '+%Y-%m-%d %H:%M:%S')]"
 
     if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
         echo "$1: $2" | tee -a "$log_file" &> /dev/null
@@ -150,8 +151,22 @@ install_i3() {
     skip_convert=true
 }
 
-
 UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
+if [ -z "$UPSTREAM" ]; then
+    logging ERROR "No upstream branch set. Please set the upstream branch and try again."
+    exit 1
+fi
+
+
+git fetch &> /dev/null
+
+# Get the upstream branch
+UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
+if [ -z "$UPSTREAM" ]; then
+    logging ERROR "No upstream branch set. Please set the upstream branch and try again."
+    exit 1
+fi
+
 LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "$UPSTREAM")
 BASE=$(git merge-base @ "$UPSTREAM")
@@ -160,16 +175,22 @@ logging DEBUG "Local: $LOCAL"
 logging DEBUG "Remote: $REMOTE"
 logging DEBUG "Base: $BASE"
 
+unstaged_changes=$(git status --porcelain)
+if [ -n "$unstaged_changes" ]; then
+    logging WARNING "You have unstaged changes in your working directory."
+    sleep 10
+fi
+
 if [ "$LOCAL" = "$REMOTE" ]; then
     logging INFO "Install script is Up-to-date"
 elif [ "$LOCAL" = "$BASE" ]; then
     logging WARNING "This is not the latest version of the install script. You should pull this repo..."
     sleep 10
 elif [ "$REMOTE" = "$BASE" ]; then
-    logging WARNING "You have unstaged changes to the install script. Please push when you have tested..."
+    logging WARNING "You have local changes to the install script. Please push after testing..."
     sleep 10
 else
-    logging ERROR "git repo for install script has diverged. Please investigate..."
+    logging ERROR "The git repository for the install script has diverged. Please investigate..."
     sleep 30
 fi
 
