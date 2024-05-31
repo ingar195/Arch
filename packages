@@ -42,13 +42,14 @@ pavucontrol
 podman
 python-pip
 qbittorrent
-#qelectrotech
+qelectrotech
 rclone
 remmina
 remmina-plugin-rdesktop
 rofi
 rsync
 rust
+sbctl
 screen
 slack-desktop
 sof-firmware

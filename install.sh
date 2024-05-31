@@ -12,13 +12,13 @@ logging() {
 
         case $1 in
             "ERROR")
-            echo -e "${color_error}$1: $2${color_reset}" | tee -a "$log_file"
+            echo -e "${color_error}$1:${color_reset} $2" | tee -a "$log_file"
             ;;
             "WARNING")
-            echo -e "${color_warning}$1: $2${color_reset}" | tee -a "$log_file"
+            echo -e "${color_warning}$1:${color_reset} $2" | tee -a "$log_file"
             ;;
             "INFO")
-            echo -e "${color_info}$1: $2${color_reset}" | tee -a "$log_file"
+            echo -e "${color_info}$1:${color_reset} $2" | tee -a "$log_file"
             ;;
             *)
             echo -e "$1: $2" | tee -a "$log_file"
@@ -363,7 +363,7 @@ if [ $USER = fw ]; then
 elif [ $USER = user ] || [ $USER = ingar ]; then
 
     # Create directory's
-    mkdir -p $HOME/workspace &> /dev/null
+    mkdir -p $HOME/workspace/work &> /dev/null
     
     install_i3
     skip_convert=false
@@ -388,7 +388,7 @@ then
     fi
 else
     logging INFO "Updating dotfiles"
-    dotfiles pull || logging ERROR "Dotfiles pull failed."    
+    dotfiles pull &> /dev/null || logging ERROR "Dotfiles pull failed."    
 fi
 
 # Create folders for filemanager
@@ -435,11 +435,13 @@ sudo updatedb
 paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
-if [ -z $skip_convert ] || [ $skip_convert = false ]; then
-    sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
-    logging INFO "Converted from https to ssh"
+if [ -z $skip_convert ]; then
+    if [ $skip_convert = false ]; then
+        sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+        logging INFO "Converted from https to ssh"
+    fi
 else
-    logging WARNING "Skipping conversion from https to ssh"
+    logging DEBUG "Skipping conversion from https to ssh"
 fi
 
 # List all packages installed on system that is not installed by this script
@@ -467,10 +469,7 @@ for package in $installed_packages; do
   fi
 done
 
-if [[ ${#unlisted_packages[@]} -gt 0 ]]; then
-  logging WARNING "The following packages are found on the system: ${unlisted_packages[@]}"
-fi
-
+logging WARNING "The following packages are not from the installer: $(echo ${unlisted_packages[@]})"
 # Reboot if any changes were made
 # Make this actually work
 reboot=true
