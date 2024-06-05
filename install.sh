@@ -146,7 +146,7 @@ install_i3() {
         mkdir .config/polybar
     fi
 
-    replace_or_append /etc/systemd/systemd.conf "#DefaultTimeoutStopSec=90s" "DefaultTimeoutStopSec=10s" sudo
+    replace_or_append /etc/systemd/system.conf "#DefaultTimeoutStopSec=90s" "DefaultTimeoutStopSec=10s" sudo
 
     skip_convert=true
 }
