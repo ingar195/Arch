@@ -1,11 +1,33 @@
 # Logg messages should be in format    logging INFO MESSAGE
-logging(){
-  if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
-    echo "$1: $2" | tee -a log.log &> /dev/null
-  else
-    echo "$1: $2" | tee -a log.log
-  fi
+logging() {
+    local color_error="\e[31m"
+    local color_warning="\e[33m"
+    local color_reset="\e[0m"
+    local color_info="\e[32m"
+    local log_file="log.log"
+    local date="[$(date '+%Y-%m-%d %H:%M:%S')]"
+
+    if [[ -z $DEBUG && $1 == "DEBUG" ]]; then
+        echo "$1: $2" | tee -a "$log_file" &> /dev/null
+    else
+
+        case $1 in
+            "ERROR")
+            echo -e "${color_error}$1:${color_reset} $2" | tee -a "$log_file"
+            ;;
+            "WARNING")
+            echo -e "${color_warning}$1:${color_reset} $2" | tee -a "$log_file"
+            ;;
+            "INFO")
+            echo -e "${color_info}$1:${color_reset} $2" | tee -a "$log_file"
+            ;;
+            *)
+            echo -e "$1: $2" | tee -a "$log_file"
+
+        esac    
+    fi
 }
+
 
 # Define commandline options
 optstring=":dsc"
@@ -23,7 +45,7 @@ while getopts "$optstring" optchar; do
         logging INFO "Adding security tools"
       ;;
     ?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$OPTARG, valid ones -s -d -c" >&2
       exit 1
       ;;
   esac
@@ -43,32 +65,35 @@ add_source_to_zshrc() {
 
 # Install Packages from file
 install_packages() {
-    logging INFO "Installing from $1"
+    logging INFO "Installing/checking for new packages from $1"
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
-        if [ -n "$(paru -Q "$package")" ]; then
+        if paru -Q "$package" &> /dev/null; then
             logging DEBUG "$package is already installed"
             continue
+        else
+            logging INFO "$package is not installed, installing now"
+            paru -S --noconfirm --needed "$package" &>/dev/null
+            if ! paru -Q "$package" &> /dev/null; then
+                logging ERROR "Failed to install $package"
+            fi
         fi
-        logging INFO "Installing $package"
-        paru -S --noconfirm --needed "$package" &>/dev/null || echo "ERROR: $package" >> error.log
     done < "$filename"
 }
 
-
 install_code_packages() {
-    logging INFO "Installing code extensions"
+    logging INFO "Installing/updating code extensions"
     local filename=$1
     local installed_extensions=$(code --list-extensions)
     while IFS= read -r package || [[ -n "$package" ]]; do
-        if echo "$installed_extensions" | grep -i "$package" &> /dev/null; then
+        if echo "$installed_extensions" | grep -qE "^$package$" &> /dev/null; then
             logging DEBUG "$package is already installed"
             continue
         fi
-        code --install-extension "$package" &>/dev/null || logging ERROR "failed to install $package"
+        code --install-extension "$package" &>/dev/null || logging ERROR "failed to install VS Code extensions $package"
     done < "$filename"
-}
 
+}
 
 replace_or_append() {
   local file="$1"  # Target file
@@ -82,7 +107,7 @@ replace_or_append() {
     local sudo="sudo"
   fi
 
-  # This gives false positive on files that curen uer doen not have read access to wazuh client ins on example
+  # This gives false positive on files that curen user don't not have read access to wazuh client ins on example
   # Command to be run a s sudo 
   if [ ! -f $file ]; then
     $sudo touch $file
@@ -105,8 +130,43 @@ replace_or_append() {
 fi
 }
 
+install_i3() {
+    git_url="https://github.com/ingar195/.dotfiles.git"
+
+    install_packages $USER"_packages"
+
+    sudo systemctl  enable --now bluetooth.service
+
+    # Dunst settings 
+    replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
+    replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
+    
+    if [ ! -f "$HOME/.dotfiles/config" ];then
+        rm .config/i3/config
+        mkdir .config/polybar
+    fi
+
+    replace_or_append /etc/systemd/system.conf "#DefaultTimeoutStopSec=90s" "DefaultTimeoutStopSec=10s" sudo
+
+    skip_convert=true
+}
 
 UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
+if [ -z "$UPSTREAM" ]; then
+    logging ERROR "No upstream branch set. Please set the upstream branch and try again."
+    exit 1
+fi
+
+
+git fetch &> /dev/null
+
+# Get the upstream branch
+UPSTREAM=$(git rev-parse --abbrev-ref '@{u}')
+if [ -z "$UPSTREAM" ]; then
+    logging ERROR "No upstream branch set. Please set the upstream branch and try again."
+    exit 1
+fi
+
 LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "$UPSTREAM")
 BASE=$(git merge-base @ "$UPSTREAM")
@@ -115,17 +175,22 @@ logging DEBUG "Local: $LOCAL"
 logging DEBUG "Remote: $REMOTE"
 logging DEBUG "Base: $BASE"
 
+unstaged_changes=$(git status --porcelain)
+if [ -n "$unstaged_changes" ]; then
+    logging WARNING "You have unstaged changes in your working directory."
+    sleep 10
+fi
+
 if [ "$LOCAL" = "$REMOTE" ]; then
     logging INFO "Install script is Up-to-date"
-    sleep 5
 elif [ "$LOCAL" = "$BASE" ]; then
     logging WARNING "This is not the latest version of the install script. You should pull this repo..."
     sleep 10
 elif [ "$REMOTE" = "$BASE" ]; then
-    logging WARNING "You have unstaged changes to the install script. Please push when you have tested..."
+    logging WARNING "You have local changes to the install script. Please push after testing..."
     sleep 10
 else
-    logging ERROR "git repo for install script has diverged. Please investigate..."
+    logging ERROR "The git repository for the install script has diverged. Please investigate..."
     sleep 30
 fi
 
@@ -155,9 +220,12 @@ if [ -z "$(git config user.name)" ]; then
     git config --global user.name "$git_name"
 fi
 
+
 # Add user to uucp group to allow access to serial ports
+# TODO: this should be a function now 
 if ! groups $USER | grep &>/dev/null '\buucp\b'; then
     sudo gpasswd -a $USER uucp
+    reboot=true
 fi
 
 # Install Paru helper
@@ -168,6 +236,8 @@ if ! command -v paru --help &> /dev/null; then
     cd ..
     sudo rm -r paru-bin
 fi
+
+paru --noconfirm -Syu
 
 # Paru settings
 replace_or_append /etc/paru.conf "#BottomUp" "BottomUp" "sudo"
@@ -203,7 +273,12 @@ mkdir -p $HOME/.config/teamviewer &> /dev/null
 # not setting on fresh install
 
 # BUG: This is now wokring. It's just a just adding at the bottom of the file
-# replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
+if [ ! -f $HOME/.config/teamviewer/client.conf ]; then
+    replace_or_append /etc/teamviewer/global.conf "[int32] EulaAccepted = 1" "[int32] EulaAccepted = 1" sudo
+    replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
+    echo "[int32] ColorScheme = 2" | tee $HOME/.config/teamviewer/client.conf &> /dev/null
+    echo "[int32] OnboardingTaskState = 1 1 1" | sudo tee /etc/teamviewer/client.conf &> /dev/null
+fi
 
 if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
     replace_or_append /etc/environment "GTK_THEME=Adwaita-dark" "GTK_THEME=Adwaita-dark" sudo
@@ -256,7 +331,10 @@ sudo systemctl enable suspend-lock.service
     
 # OSC Printer
 sudo systemctl enable --now cups
-lpadmin -p OSC_Printer -E -v "ipp://192.168.6.11/ipp/print" -m everywhere
+
+if ! lpstat -p OSC_Printer &> /dev/null; then
+    lpadmin -p OSC_Printer -E -v "ipp://192.168.6.11/ipp/print" -m everywhere
+fi
 
 # Greeter
 replace_or_append /etc/lightdm/lightdm-gtk-greeter.conf "#theme-name=" "theme-name=Numix" sudo
@@ -305,28 +383,15 @@ if [ $USER = fw ]; then
     
     systemctl --user enable --now ssh-agent
 
-
 elif [ $USER = user ] || [ $USER = ingar ]; then
-    git_url="https://github.com/ingar195/.dotfiles.git"
 
-    install_packages "user_packages"
-
-    sudo systemctl  enable --now bluetooth.service
-
-    # Dunst settings 
-    replace_or_append /etc/dunst/dunstrc "offset = 10x50" "offset = 40x70" sudo
-    replace_or_append /etc/dunst/dunstrc "notification_limit = 20" "notification_limit = 5" sudo
-
-    # Directory
-    mkdir -p $HOME/workspace &> /dev/null
+    # Create directory's
+    mkdir -p $HOME/workspace/work &> /dev/null
     
-    if [ ! -f "$HOME/.dotfiles/config" ];then
-        rm .config/i3/config
-        mkdir .config/polybar
-    fi
-
+    install_i3
+    skip_convert=false
 else
-    read -p "enter the https URL for you git bare repo : " git_url
+    read -p "enter the https URL for you git bare repo: " git_url
 fi
 
 # Tmp alias for installation only 
@@ -345,10 +410,8 @@ then
         logging INFO "Dotfiles Successfully checked out."
     fi
 else
-    
     logging INFO "Updating dotfiles"
-    
-    dotfiles pull || logging ERROR "Dotfiles pull failed."    
+    dotfiles pull &> /dev/null || logging ERROR "Dotfiles pull failed."    
 fi
 
 # Create folders for filemanager
@@ -382,8 +445,10 @@ sudo sed -i "s|script_path|$PWD|g" $HOME/.config/zsh/.functions
 add_source_to_zshrc "$zsh_config_path/.aliases"
 add_source_to_zshrc "$zsh_config_path/.functions"
 
-if [[ $zsh_work == "y" ]]; then
-    add_source_to_zshrc "$zsh_config_path/.work"
+file_to_source="$zsh_config_path/.work"
+
+if [[ $zsh_work == "y" && ! $(grep -q "$file_to_source" ~/.zshrc) ]]; then
+    add_source_to_zshrc "$file_to_source"
 fi
 
 # Update locate database
@@ -394,12 +459,13 @@ paru -Qdtq | paru --noconfirm -Rs - &> /dev/null
 
 # Converts https to ssh
 if [ -z $skip_convert ]; then
-    sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
-    logging INFO "Converted from https to ssh"
+    if [ $skip_convert = false ]; then
+        sed -i 's/https:\/\/github.com\//git@github.com:/g' /home/$USER/.dotfiles/config
+        logging INFO "Converted from https to ssh"
+    fi
 else
-    logging WARNING "Skipping conversion from https to ssh"
+    logging DEBUG "Skipping conversion from https to ssh"
 fi
-
 
 # List all packages installed on system that is not installed by this script
 declare -a package_lists
@@ -426,14 +492,14 @@ for package in $installed_packages; do
   fi
 done
 
-if [[ ${#unlisted_packages[@]} -gt 0 ]]; then
-  logging WARNING "The following packages are found on the system: ${unlisted_packages[@]}"
-  # As our logger does not support printing a list somehow, I echo it out to terminal for now... TO BE FIXED
-  echo "${unlisted_packages[@]}"
+logging WARNING "The following packages are not from the installer: $(echo ${unlisted_packages[@]})"
+# Reboot if any changes were made
+# Make this actually work
+reboot=true
+if [ "$reboot" = true ]; then
+    echo ----------------------
+    echo "Please reboot your PC"
+    echo ----------------------
 fi
 
 
-
-echo ----------------------
-echo "Please reboot your PC"
-echo ----------------------

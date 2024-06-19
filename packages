@@ -10,7 +10,6 @@ can-utils
 cups
 curl
 dmidecode
-docker
 dunst
 efibootmgr
 feh
@@ -40,6 +39,7 @@ p7zip
 paru-bin
 paru-bin-debug
 pavucontrol
+podman
 python-pip
 qbittorrent
 qelectrotech
@@ -49,6 +49,7 @@ remmina-plugin-rdesktop
 rofi
 rsync
 rust
+sbctl
 screen
 slack-desktop
 sof-firmware
@@ -73,3 +74,4 @@ xidlehook
 xorg-xkill
 zip
 zsh
+zram-generator
