@@ -237,6 +237,8 @@ if ! command -v paru --help &> /dev/null; then
     sudo rm -r paru-bin
 fi
 
+paru --noconfirm -Syu
+
 # Paru settings
 replace_or_append /etc/paru.conf "#BottomUp" "BottomUp" "sudo"
 replace_or_append /etc/paru.conf "#SudoLoop" "SudoLoop" "sudo"
