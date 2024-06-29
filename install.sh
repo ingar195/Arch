@@ -272,7 +272,7 @@ gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 mkdir -p $HOME/.config/teamviewer &> /dev/null
 # not setting on fresh install
 
-# BUG: This is now wokring. It's just a just adding at the bottom of the file
+# BUG: This is not wokring. It's just a just adding at the bottom of the file
 if [ ! -f $HOME/.config/teamviewer/client.conf ]; then
     replace_or_append /etc/teamviewer/global.conf "[int32] EulaAccepted = 1" "[int32] EulaAccepted = 1" sudo
     replace_or_append $HOME/.config/teamviewer/client.conf "[int32] ColorScheme = 1" "[int32] ColorScheme = 2"
@@ -307,9 +307,6 @@ replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "blacklist no
 # BUG: Failed to add to file 
 replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouveau modeset=0" sudo
 # sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
-
-#Docker
-sudo systemctl enable docker.service acpid.service --now
 
 # Wazuh-agent
 sudo sed -i 's/MANAGER_IP/213.161.247.227/g' /var/ossec/etc/ossec.conf
@@ -390,6 +387,8 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     
     install_i3
     skip_convert=false
+elif [ user = e ]; then
+    install_packages $USER"_packages"
 else
     read -p "enter the https URL for you git bare repo: " git_url
 fi
