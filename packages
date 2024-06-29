@@ -42,7 +42,7 @@ pavucontrol
 podman
 python-pip
 qbittorrent
-qelectrotech
+_qelectrotech
 rclone
 remmina
 remmina-plugin-rdesktop
