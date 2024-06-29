@@ -389,6 +389,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     skip_convert=false
 elif [ user = e ]; then
     install_packages $USER"_packages"
+    git_url="git@gitlab.com:ekroll/cfg.git"
 else
     read -p "enter the https URL for you git bare repo: " git_url
 fi
