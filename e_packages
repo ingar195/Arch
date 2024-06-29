@@ -1,174 +1,58 @@
-acpilight
-alacritty
-alsa-utils
-amdvlk
-amd-vulkan-prefixes
-apg
-arandr
-ardour-git
-arduino-cli
-autorandr
-avahi
-base-devel
-biber
-binutils
-blender
-bpython
-brave-bin
-can-utils
-carla
-choosenim
-cmake
-colorpicker
-corectrl
-cpupower
-cpupower-gui
-ctags
-cups
-cups-pdf
-docker
-dunst
-elixir
-feh
-flameshot
-fzf
-gcr
-geogebra
-gimp
-git
-git-lfs
-glew
-glfw-x11
-glm
-gnome-keyring
-godot
-google-java-format
-grb-git
-gtk-engine-murrine
-gtk-engines
-gutenprint
-gvfs
-hex
-hollywood
-hplip
-hsetroot
-htop
-i3lock-color
-inkscape
-inotify-tools
-java-openjfx
-jdk-openjdk
-keepassxc
-kjv-apocrypha
-lf
-libev
-libgnome-keyring
-librecad
-libreoffice-fresh
-librewolf-bin
-libsecret
-libva-intel-driver
-logisim-evolution
-lsof
-lxappearance
-make
-meld
-mesa-utils
-minecraft-launcher
-nasm
-nemo
-neovim
-nfs-utils
-nmap
-nodejs
-npm
-nss-mdns
-nvim-packer-git
-ocenaudio-bin
-openresolv
-openvdb
-p7zip
-pandoc
-pango
-pavucontrol
-pdfjs
-peak-linux-headers
-picom-ftlabs-git 
-pipewire
-pipewire-alsa
-pipewire-jack
-pipewire-pulse
-postgresql
-powertop
-pycharm-community-edition
-pyenv
-python
-python-cairocffi
-python-dbus-next
-python-pip
-python-pynput
-python-pywayland
-python-pywlroots
-python-xcffib
-python-xkbcommon
-qemu-full
-qogir-gtk-theme
-qpwgraph
-qt5ct
-qt5-wayland
-qtile
-qutebrowser
-rbenv
-reflector
-remmina
-ripgrep
-rustdesk-bin
-scrot
-sl
-slack-desktop
-spectrwm
-speedometer
-spotify
-sqlite
-syslog-ng
-system-config-printer
-taglib1
-teamviewer
-texlive-core
-texlive-langextra
-texlive-langgreek
-texlive-science
-timeshift-bin
-tmux
-tmuxp
-tree
-tree-sitter-cli
-ttf-ms-fonts
-ttf-sbl-biblit
-ttf-vista-fonts
-unzip
-vala
-vde2
-virt-manager
-visual-studio-code-bin
-vul-git
-vulkan-icd-loader
-vulkan-intel
-vulkan-radeon
-vulkan-tools
-wazuh-agent
-webkit2gtk
-wireguard-tools
-wmctrl
-xclip
-xdg-user-dirs
-xorg-fonts-misc
-xorg-server
-xorg-server-xephyr
-xorg-xinit
-xorg-xrandr
-xorg-xsetroot
-yt-dlp
-ytfzf
-zathura
-zathura-pdf-mupdf
+spectrwm # Window manager
+i3lock-color # Screen locker
+picom-ftlabs-git # X11 compositor
+spotify # Music streaming
+brave-bin # Web browser
+ardour-git # Audio workstation
+qpwgraph # Network viewer
+blender # 3D creation suite
+godot # Game engine
+gimp # Image editor
+colorpicker # Color selection tool
+inkscape # Vector graphics editor
+logisim-evolution # Logic simulator
+geogebra # Math software
+zathura # PDF reader
+zathura-pdf-mupdf # PDF plugin
+libreoffice-fresh # Office suite
+tmux # Terminal multiplexer
+sl # Mistype joke
+lf # File manager
+htop # Process viewer
+neovim # Text editor
+ripgrep # Search tool
+tree-sitter-cli # Grammar tool
+grb-git # Unclear
+vul-git # Unclear
+kjv-apocrypha # Bible text
+bpython # Python interface
+choosenim # Nim installer
+elixir # Programming language
+hex # Package manager
+google-java-format # Code formatter
+wmctrl # Window manager tool
+arduino-cli # Arduino tool
+fzf # Fuzzy finder
+lsof # Open file lister
+pandoc # Document converter
+texlive-core # TeX system
+texlive-langextra # TeX languages
+texlive-langgreek # TeX Greek support
+texlive-science # TeX science
+ttf-ms-fonts # Microsoft fonts
+ttf-sbl-biblit # SBL fonts
+ttf-vista-fonts # Vista fonts
+xorg-fonts-misc # X11 fonts
+biber # Bibliography tool
+glew # OpenGL library
+glfw-x11 # OpenGL windowing
+glm # OpenGL math
+gutenprint # Printer drivers
+gvfs # Virtual file system
+java-openjfx # JavaFX
+jdk-openjdk # Java SDK
+inotify-tools # File system monitoring
+pipewire # Multimedia server
+pipewire-alsa # ALSA plugin
+pipewire-jack # JACK plugin
+pipewire-pulse # PulseAudio plugin

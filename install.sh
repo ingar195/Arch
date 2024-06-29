@@ -68,6 +68,7 @@ install_packages() {
     logging INFO "Installing/checking for new packages from $1"
     local filename=$1
     while IFS= read -r package || [[ -n "$package" ]]; do
+        package=$(echo $package | awk '{print $1}')
         if paru -Q "$package" &> /dev/null; then
             logging DEBUG "$package is already installed"
             continue
