@@ -387,7 +387,7 @@ elif [ $USER = user ] || [ $USER = ingar ]; then
     
     install_i3
     skip_convert=false
-elif [ user = e ]; then
+elif [ $USER = e ]; then
     install_packages $USER"_packages"
     git_url="git@gitlab.com:ekroll/cfg.git"
 else
