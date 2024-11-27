@@ -24,10 +24,12 @@ These are stored in a GitHub repo like [this](https://github.com/ingar195/arch.g
 ## Usage
 When installing, you have a selection of arguments. They can be used all together or one at a time.
 Arguments:
-* `sh install.sh [-s -d -c]`
+* `sh install.sh [-s -d -c -n]`
 * `-s` skips converting the dotfiles repo to SSH (mostly used for testing)
-* `-d` enables debug to console log 
+* `-d` enables debug to console log
 * `-c` includes installation of the sec tools
+* `-n` skips blacklisting of Nvidia drivers
+
 
 ## Features
 Here are some of the features:  
