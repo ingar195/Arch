@@ -30,7 +30,7 @@ logging() {
 
 
 # Define commandline options
-optstring=":dsc"
+optstring=":dscn"
 while getopts "$optstring" optchar; do
   case $optchar in
     d)
@@ -44,8 +44,12 @@ while getopts "$optstring" optchar; do
         sectools=true
         logging INFO "Adding security tools"
       ;;
+    n)
+        skip_nvidia_blacklist=true
+        logging INFO "Skipping Nvidia blacklist"
+      ;;
     ?)
-      echo "Invalid option: -$OPTARG, valid ones -s -d -c" >&2
+      echo "Invalid option: -$OPTARG, valid ones -s -d -c -n" >&2
       exit 1
       ;;
   esac
@@ -302,11 +306,14 @@ sudo systemctl disable iwd.service &> /dev/null
 # Setup Network manager
 sudo systemctl enable NetworkManager.service --now
 
-replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "blacklist nouveau" sudo
+# Blacklist Nvidia nouveau by default unless -n flag is provided
+if [ -z "$skip_nvidia_blacklist" ]; then
+    replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "blacklist nouveau" sudo
 
-# BUG: Failed to add to file 
-replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouveau modeset=0" sudo
-# sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+    # BUG: Failed to add to file 
+    replace_or_append /etc/modprobe.d/blacklist-nvidia-nouveau.conf "" "options nouveau modeset=0" sudo
+    # sudo sh -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+fi
 
 #Docker
 sudo systemctl enable docker.service acpid.service --now
