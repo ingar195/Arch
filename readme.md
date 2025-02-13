@@ -45,6 +45,7 @@ Here are some of the features:
     * Optimizes power usage with TLP
     * Dotfiles setup
 
+
 * Aliases and commands:
     - `dotfiles`    Is an alias for using the dotfiles repo that gets initialized or downloaded during installation.
     - `dotp`        Alias for quickly committing and pushing all changes in files already committed 
