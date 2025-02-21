@@ -285,7 +285,7 @@ if [ ! "$(grep "GTK_THEME=Adwaita-dark" /etc/environment)" ]; then
     # echo "GTK_THEME=Adwaita-dark" | sudo tee -a /etc/environment
 fi
 
-# Set Backlight permissions and monotor rules
+# Set Backlight permissions and monitor rules
 # Replace does not work, something wrong with "'" in the string
 echo 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness /sys/class/backlight/%k/bl_power"' | sudo tee /etc/udev/rules.d/backlight-permissions.rules &> /dev/null
 sudo sh -c 'echo SUBSYSTEM=="drm", ACTION=="change", RUN+="/usr/bin/autorandr" > /etc/udev/rules.d/70-monitor.rules' &> /dev/null
